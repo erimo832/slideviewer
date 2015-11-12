@@ -26,7 +26,7 @@ namespace ControlHub.Repository
                         result.Add(new Slide 
                         {
                             Type = "message",
-                            Css = "font-size: 60px; width: 1100px;", // must need db or some kind of style file
+                            Css = "font-size: 60px; width: 1100px;", // move somewhere else
                             Value = row
                         });
                     }
@@ -38,7 +38,7 @@ namespace ControlHub.Repository
                         result.Add(new Slide
                         {
                             Type = "url",
-                            Css = "width: 100%; height: 100%", // must need db or some kind of style file
+                            Css = "width: 100%; height: 100%", // move somewhere else
                             Value = row
                         });
                     }
@@ -49,7 +49,7 @@ namespace ControlHub.Repository
                     result.Add(new Slide 
                     { 
                         Type = "image",
-                        Css = "max-width: 100%; max-height: 820px;", // must need db or some kind of style file
+                        Css = "max-width: 100%; max-height: 820px;", // move somewhere else
                         Value = string.Format("{0}{1}", path, item.Name)
                     });
                 }
