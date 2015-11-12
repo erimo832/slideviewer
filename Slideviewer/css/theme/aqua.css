@@ -1,0 +1,34 @@
+﻿.color-primary-0 { background-color: #758094 }	/* Main Primary color */
+.color-primary-1 { background-color: #CED1D7 }
+.color-primary-2 { background-color: #9BA2AF }
+.color-primary-3 { background-color: #55637E }
+.color-primary-4 { background-color: #3B4A69 }
+
+.shadow { box-shadow: 0px 10px 14px -7px #FFFFFF; }
+
+.error {
+    background-color: rgb(139,24,39);
+    color: rgb(255,255,255);
+}
+
+.back-image {
+    background-image: url("/images/water.jpg");
+    background-size: 100%;
+}
+
+.header {    
+    background: linear-gradient(#9BA2AF, #758094);
+}
+
+.textArea {
+    opacity: 0.9;
+}
+
+.textInput {
+    opacity: 0.9;
+}
+
+.selectionlist {
+    opacity: 0.9;
+}
+

@@ -1,0 +1,53 @@
+﻿.color-primary-0 { background-color: #9E9E9F; color: white; }
+.color-primary-1 { background-color: #FFFFFF; color: white; }
+.color-primary-2 { background-color: #CDCDCD; color: white; }
+.color-primary-3 { background-color: #7E7D80; color: white; }
+.color-primary-4 { background-color: #5F5D63; color: white; }
+
+.shadow { box-shadow: 0px 10px 14px -7px black; }
+
+.error {
+    background-color: rgb(139,24,39);
+    color: rgb(255,255,255);
+}
+
+.link {
+    color: white;
+}
+
+.back-image {
+    background-image: url("/images/gothouses/lannister.jpg");
+    /*background: url("/images/gothouses/randomHouse.html");*/
+    /*background-color: rgba(205,205,205,0.1);*/
+    background-size: 100%;
+    /*background-color: black;*/
+    background-repeat: no-repeat;
+}
+
+.imgFill {
+    background-size: 100%;
+    background-color: black;
+    background-repeat: no-repeat;
+}
+
+.header {    
+    /*background: linear-gradient(#CDCDCD, #9E9E9F);*/
+    /*opacity: 0.5;*/    
+    background-color: rgba(205,205,205,0.6);
+}
+
+.textArea {
+    opacity: 0.5;
+}
+
+.textInput {
+    opacity: 0.5;
+}
+
+.selectionlist {
+    opacity: 0.5;    
+}
+
+.actionbutton {
+    opacity: 0.5;
+}

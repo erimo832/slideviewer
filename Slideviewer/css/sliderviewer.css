@@ -1,0 +1,18 @@
+﻿.imgStyle {
+    max-width: 100%; 
+    max-height: 820px;
+}
+
+.messageStyle {
+    font-size: 60px;
+    width: 1100px;
+}
+
+.iframe {
+    display: block;       /* iframes are inline by default */
+    background: #000;
+    border: none;         /* Reset default border */
+    height: 100vh;        /* Viewport-relative units */
+    width: 100vw;
+}
+

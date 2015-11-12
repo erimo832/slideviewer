@@ -1,0 +1,248 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+
+    <link href="/css/manager.css" rel="stylesheet" />
+    <link id="theme" href="/css/theme/military.css" rel="stylesheet" />
+        
+    <script src="/Scripts/jquery-1.6.4.min.js"></script>    
+    <script src="/Scripts/jquery.signalR-2.2.0.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script id="houses" src="/Scripts/gothouses.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            // Declare a proxy to reference the hub.
+            var chat = $.connection.commandHub;
+                         
+            /*******************************************
+            * register server events
+            *******************************************/
+            chat.client.clientListChanges = function (clients) {
+                // Html encode display name and message.
+                var obj = jQuery.parseJSON(clients);
+
+                var options = $("#clientList");
+                options.empty();
+
+                $.each(obj, function () {
+                    options.append($("<option />").val(this.ConnectionId).text(this.Name));
+                });
+            
+                resizeSelectionList();
+            };
+
+            chat.client.logEvent = function (json) {
+                // Html encode display name and message.
+                var log = jQuery.parseJSON(json);
+                var logrow =  log.TimeStamp + "(" +  log.Level + ")" + " - " + log.Message;
+                                
+
+                $("#log").val(logrow + "\n" + $("#log").val());
+
+                //Some flashing to alert new event
+                $("#log").fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+            };
+
+
+            //Init manager
+            $.connection.hub.start().done(function () {                
+                chat.server.registerManager("dummy");
+
+                //IE11 fix for resize (need to include jQuery UI)
+                //$("#log").resizable();
+            });
+                                    
+            /*******************************************
+            * register button events
+            *******************************************/
+            $.connection.hub.start().done(function () {
+                $('#sendmessage').click(function () {
+                    var clients = getSelectedConnectionIds();
+
+                    var viewCommand = {
+                        message: $('#clientMessage').val(),
+                        messageCss: $('#clientTextCss').val(),
+                        url: $('#clientUrl').val()
+                    };
+                    
+                    if (clients.length > 0) {
+                        $("#clientList").removeClass("error");
+
+                        chat.server.pushCommandToClients(clients, viewCommand);
+
+                        //clear sent message
+                        $('#clientMessage').val("");
+                    }
+                    else {
+                        $("#clientList").addClass("error");
+                    }
+                });
+            });
+            
+            $.connection.hub.start().done(function () {
+                $('#broadcastmessage').click(function () {
+                    var viewCommand = {
+                        message: $('#clientMessage').val(),
+                        messageCss: $('#clientTextCss').val(),
+                        url: $('#clientUrl').val()
+                    };
+
+                    chat.server.broadcastMessage(viewCommand);
+
+                    //clear sent message
+                    $('#clientMessage').val("");
+                });
+            });
+
+            $.connection.hub.start().done(function () {
+                $('#changeslide').click(function () {
+                    var clients = getSelectedConnectionIds();
+                    var name = $('#slideShowName').val();
+
+                    chat.server.pushSlidesToClients(clients, name);
+                });
+            });
+
+            $.connection.hub.start().done(function () {
+                $('#clear').click(function () {
+                    //clear it
+                    $("#log").val("");
+                });
+            });
+
+            
+            /* Theme */
+            $('#changeTheme').click(function () {
+                /*if ($('#changeTheme').val() == "css/theme/gotHouses.css") {
+                    initGotHouses();
+                }
+                else {
+                    clearGotHouses();
+                }*/
+
+                $("head link#theme").attr("href", $('#changeTheme').val());
+            });
+
+
+
+
+            $.connection.hub.disconnected(function () {
+                $('#serverStatus').text("disconnected from server, lasterror: " + $.connection.hub.lastError.message);
+                $('#serverStatus').show();
+
+                //reconnect
+                setTimeout(function () {
+                    $.connection.hub.start().done(function () {
+                        chat.server.registerManager("dummy");
+                        $('#serverStatus').hide();
+                    });
+                }, 5000); // Restart connection after 5 seconds.
+
+            });
+
+            $.connection.hub.reconnecting(function () {
+                $('#serverStatus').text("reconnecting to server");
+                $('#serverStatus').show();
+            });
+
+            $.connection.hub.reconnected(function () {
+                $('#serverStatus').text("reconnected to server");
+                $('#serverStatus').show();
+
+                //reconnect
+                chat.server.registerManager("dummy");
+
+                //Show for only 10sec
+                setTimeout(function () {
+                    $('#serverStatus').hide();
+                }, 10000);
+            });
+
+        });
+                
+        /*******************************************
+        * functions
+        *******************************************/
+        function getSelectedConnectionIds() {
+            var foo = [];
+            $('#clientList :selected').each(function (i, selected) {
+                foo[i] = $(selected).val();
+            });
+
+            return foo;
+        }
+            
+        function resizeSelectionList() {        
+            $(".autoheight").attr("size", parseInt($(".autoheight option").length));
+        };            
+    </script>
+       
+</head>
+<body id="body" class="color-primary-0 back-image">
+    <div id="serverStatus" class="error"></div>
+
+    <div class="header color-primary-3 shadow">
+        another stupid system
+        <select id="changeTheme" style="border-width: 0px;" class="right color-primary-2">
+            <option value="css/theme/military.css">military</option>
+            <option value="css/theme/grey.css">grey</option>
+            <option value="css/theme/aqua.css">aqua</option>
+            <option value="css/theme/jungle.css">jungle</option>            
+            <option value="css/theme/pink.css">pink</option>
+            <option value="css/theme/fire.css">fire</option>
+            <option value="css/theme/code.css">code</option>
+            <option value="css/theme/wood.css">wood</option>
+            <option value="css/theme/got.css">got</option>
+            <option value="css/theme/gotHouses.css">houses</option>
+        </select>
+    </div>
+
+    <div class="content">
+        <div class="area">
+            <div class="inputheader">clients</div>
+            <select id="clientList" class="autoheight selectionlist color-primary-2 shadow" size="1" multiple="multiple"></select>
+        </div>
+
+
+        <div class="area">
+            <div class="inputheader">message</div>
+            <input type="text" class="textInput color-primary-2 shadow" id="clientMessage" />
+
+            <div class="inputheader">css</div>
+            <input type="text" class="textInput color-primary-2 shadow" id="clientTextCss" value="font-size: 50px;" />
+
+            <div class="inputheader">url</div>
+            <input type="text" class="textInput color-primary-2 shadow" id="clientUrl" />
+
+            <div class="area">
+                <input type="button" class="actionbutton shadow color-primary-3" id="sendmessage" value="send" />
+                <input type="button" class="actionbutton shadow color-primary-3" id="broadcastmessage" value="broadcast" />
+            </div>
+
+            <div class="area">
+                <div class="inputheader">slide show name</div>
+                <input type="text" class="textInput color-primary-2 shadow" id="slideShowName" value="tv" />
+                
+                <div class="area">
+                    <input type="button" class="actionbutton shadow color-primary-3" id="changeslide" value="change slide" />
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="inputheader">log</div>
+            <table>
+                <tr>
+                    <td style="position:relative;">
+                        <input id="clear" type="button" class="link topRight" value="clear" />
+                        <textarea id="log" class="textArea color-primary-2 shadow"></textarea>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+</body>
+</html>

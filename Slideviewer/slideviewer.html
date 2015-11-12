@@ -1,0 +1,232 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="/css/sliderviewer.css" rel="stylesheet" />
+
+    <script src="/Scripts/jquery-1.6.4.min.js"></script>
+    <script src="/Scripts/jquery.signalR-2.2.0.js"></script>
+    <script src="/signalr/hubs"></script>
+
+    <script src="/Scripts/jquery.timer.js"></script>
+
+    <script type="text/javascript">
+    $(function () {
+        
+        var slides = null;
+        var timer = null;
+
+        //replace with start and stop of timer
+        //https://github.com/jchavannes/jquery-timer
+        var timer = $.timer(function () {
+            showSlide();
+        });
+
+
+        // Declare a proxy to reference the hub.
+        var chat = $.connection.commandHub;
+        
+        $('#frameholder').hide();
+        $('#iframe').hide();
+        $('#serverStatus').hide();
+
+
+        /*******************************************
+        * functions
+        *******************************************/
+        function getQueryParam(paramName) {
+            //Remove first ? character
+            var query = location.search.substring(1);
+
+            if (query.length > 0) {
+                //Display date time
+                query = query.split("%20").join(" ");
+                query = query.split("%27").join("'");
+
+                var params = query.split("&");
+
+                //style, format, offset			
+                for (i = 0; i < params.length; i++) {
+
+                    var keyVal = params[i].split("=");
+                    if (keyVal[0] == paramName) {
+                        return keyVal[1];
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        function registerToServer() {
+            var name = getQueryParam("name");
+
+            if (name == null) {
+                name = $('#clientName').val();
+            }
+
+            chat.server.registerToEvents(name);
+            
+
+            $('#clientName').hide();
+            $('#register').hide();
+
+            chat.server.getSlideshow(name);
+        }
+
+        function showSlide() {
+            if (slides != null) {
+                var num = Math.round((Math.random() * (slides.length - 1)));
+
+                var obj = slides[num];
+
+                //Type
+
+                if (obj.Type == "message") {
+                    $('#frameholder').hide();
+                    $('#iframe').hide();
+
+                    $('#message').html("<div style=\"" + obj.Css + "\">" + obj.Value + "</div>");
+                    $('#message').show();
+                }
+
+                if (obj.Type == "image") {
+                    $('#frameholder').hide();
+                    $('#iframe').hide();
+
+                    $('#message').html('<image id="image" src="' + obj.Value + '" style="' + obj.Css + '" />');
+                    $('#message').show();
+                }
+
+                if (obj.Type == "url") {
+                    $('#message').hide();
+
+                    $('#iframe').attr('src', obj.Value);
+                    $('#frameholder').show();
+                    $('#iframe').show();
+                }
+            }
+        }
+
+        /*******************************************
+        * register server events
+        *******************************************/
+        
+        chat.client.newMessage = function (message) {        
+            var encodedMsg = $('<div />').text(message).html();
+
+            $('#serverStatus').text(encodedMsg);
+            $('#serverStatus').show();
+
+            //Show for only 10sec
+            setTimeout(function () {
+                $('#serverStatus').hide();
+            }, 10000);
+        };
+
+        chat.client.newCommand = function (json) {
+            var cmd = jQuery.parseJSON(json);
+
+            if (cmd.Message != "") {
+                $('#frameholder').hide();
+                $('#iframe').hide();
+
+                $('#message').html("<div style=\"" + cmd.MessageCss + "\">" + cmd.Message + "</div>");
+                $('#message').show();
+            }
+
+            if (cmd.Url != "") {
+                $('#message').hide();
+
+                $('#iframe').attr('src', cmd.Url);
+                $('#iframe').show();
+            }
+        };
+        
+        chat.client.slidesChanged = function (json) {
+            slides = jQuery.parseJSON(json);
+            
+            //start slideshow
+            showSlide();
+
+            //start timer (10 min)           
+            timer.set({ time: 600000, autostart: true });
+            //timer.set({ time: 5000, autostart: true });
+        };
+
+                
+        // Start the connection.
+        $.connection.hub.start().done(function () {
+            //check if name in query string
+            if (getQueryParam("name") != null) {
+                registerToServer();
+            }
+
+            $('#register').click(function () {                
+                registerToServer();
+            });
+        });
+
+        
+        $.connection.hub.disconnected(function () {            
+            $('#serverStatus').text("disconnected from server, lasterror: " + $.connection.hub.lastError.message);
+            $('#serverStatus').show();
+                    
+            //reconnect
+            setTimeout(function () {
+                $.connection.hub.start().done(function () {            
+                    registerToServer();
+                    $('#serverStatus').hide();
+                });
+            }, 5000); // Restart connection after 5 seconds.
+            
+        });
+        
+        $.connection.hub.reconnecting(function () {
+            $('#serverStatus').text("reconnecting to server");
+            $('#serverStatus').show();
+        });
+
+        $.connection.hub.reconnected(function () {            
+            $('#serverStatus').text("reconnected to server");
+            $('#serverStatus').show();
+            registerToServer();
+
+            //Show for only 10sec
+            setTimeout(function () {
+                $('#serverStatus').hide();
+            }, 10000);
+        });
+
+
+        $(document).ready(function () {
+            $('#message').click(function () {
+                showSlide();
+            });
+        });
+
+        $(document).ready(function () {
+            $('#refresh').click(function () {
+                showSlide();
+            });
+        });
+    });
+    </script>
+
+</head>
+<body style="margin: 0;">
+    <input type="text" id="clientName" value="Change" />
+    <input type="button" id="register" value="register" />
+
+    <div id="serverStatus" class="error">
+    </div>
+
+    <div id="message">
+    </div>
+
+    <div id="frameholder">
+        <div id="refresh">refresh</div>      
+        <iframe id="iframe" src="" style="" class="iframe"></iframe>
+    </div>
+</body>
+</html>

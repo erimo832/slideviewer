@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="/css/manager.css" rel="stylesheet" />
+
+    <script src="/Scripts/jquery-1.6.4.min.js"></script>
+    <script src="/Scripts/jquery.signalR-2.2.0.js"></script>
+    <script src="/signalr/hubs"></script>
+
+    <script type="text/javascript">
+    $(function () {
+        // Declare a proxy to reference the hub.
+        var chat = $.connection.commandHub;
+        
+        $('#iframe').hide();
+        $('#serverStatus').hide();
+
+
+        /*******************************************
+        * register server events
+        *******************************************/
+        
+        chat.client.newMessage = function (message) {        
+            var encodedMsg = $('<div />').text(message).html();
+
+            $('#serverStatus').text(encodedMsg);
+            $('#serverStatus').show();
+
+            //Show for only 10sec
+            setTimeout(function () {
+                $('#serverStatus').hide();
+            }, 10000);
+        };
+
+        chat.client.newCommand = function (json) {
+            var cmd = jQuery.parseJSON(json);
+
+            if (cmd.Message != "") {
+                $('#message').html("<div style=\"" + cmd.MessageCss + "\">" + cmd.Message + "</div>");
+                $('#message').show();
+            }
+            else {
+                $('#message').hide();
+            }
+
+            if (cmd.Url != "") {
+                $('#iframe').attr('src', cmd.Url);
+                $('#iframe').show();
+            }
+            else {
+                $('#iframe').hide();
+            }
+        };
+                
+        // Start the connection.
+        $.connection.hub.start().done(function () {
+            //check if name in query string
+            if (getQueryParam("name") != null) {
+                registerToServer();
+            }
+
+            $('#register').click(function () {                
+                registerToServer();
+            });
+        });
+
+        
+        $.connection.hub.disconnected(function () {            
+            $('#serverStatus').text("disconnected from server, lasterror: " + $.connection.hub.lastError.message);
+            $('#serverStatus').show();
+                    
+            //reconnect
+            setTimeout(function () {
+                $.connection.hub.start().done(function () {            
+                    registerToServer();
+                    $('#serverStatus').hide();
+                });
+            }, 5000); // Restart connection after 5 seconds.
+            
+        });
+        
+        $.connection.hub.reconnecting(function () {
+            $('#serverStatus').text("reconnecting to server");
+            $('#serverStatus').show();
+        });
+
+        $.connection.hub.reconnected(function () {            
+            $('#serverStatus').text("reconnected to server");
+            $('#serverStatus').show();
+            registerToServer();
+
+            //Show for only 10sec
+            setTimeout(function () {
+                $('#serverStatus').hide();
+            }, 10000);
+        });
+
+        /*******************************************
+        * functions
+        *******************************************/
+        function getQueryParam(paramName) {
+            //Remove first ? character
+            var query = location.search.substring(1);
+
+            if (query.length > 0) {
+                //Display date time
+                query = query.split("%20").join(" ");
+                query = query.split("%27").join("'");
+
+                var params = query.split("&");
+
+                //style, format, offset			
+                for (i = 0; i < params.length; i++) {
+
+                    var keyVal = params[i].split("=");
+                    if (keyVal[0] == paramName) {
+                        return keyVal[1];
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        function registerToServer() {
+            var name = getQueryParam("name");
+
+            if (name == null) {
+                name = $('#clientName').val();
+            }
+
+            chat.server.registerToEvents(name);
+
+
+            $('#clientName').hide();
+            $('#register').hide();
+        }
+    });
+    </script>
+
+</head>
+<body style="margin: 0;">
+    <input type="text" id="clientName" value="Change" />
+    <input type="button" id="register" value="register" />
+
+    <div id="serverStatus" class="error">
+    </div>
+
+    <div id="message">
+    </div>
+
+    <iframe id="iframe" src="" class="iframe"></iframe>
+
+</body>
+</html>

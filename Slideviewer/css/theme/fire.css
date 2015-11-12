@@ -1,0 +1,39 @@
+﻿.color-primary-0 { background-color: #2D0A0A; color: white; }	
+.color-primary-1 { background-color: #3B2828; color: white; }
+.color-primary-2 { background-color: #3A1818; color: white; }
+.color-primary-3 { background-color: #1A0000; color: white; }
+.color-primary-4 { background-color: #080000; color: white; }
+
+.shadow { box-shadow: 0px 10px 14px -7px red; }
+
+.error {
+    background-color: rgb(139,24,39);
+    color: rgb(255,255,255);
+}
+
+.link {
+    color: white;
+}
+
+.back-image {
+    background-image: url("/images/fire.jpg");
+    background-size: 100%;
+}
+
+.header {
+    /*font-style: italic;*/
+    /*background-image: url("http://www.thurles.info/wp-content/uploads/2010/01/A-Warm-Coal-Fire.jpg");*/
+    background: linear-gradient(#3A1818, #2D0A0A);
+}
+
+.textArea {
+    opacity: 0.9;
+}
+
+.textInput {
+    opacity: 0.9;
+}
+
+.selectionlist {
+    opacity: 0.9;
+}

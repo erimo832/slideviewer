@@ -1,0 +1,16 @@
+﻿.color-primary-0 { background-color: #A07777 }	/* Main Primary color */
+.color-primary-1 { background-color: #F0D7D7 }
+.color-primary-2 { background-color: #C4A0A0 }
+.color-primary-3 { background-color: #7A5353 }
+.color-primary-4 { background-color: #5B2E2E }
+
+.shadow { box-shadow: 0px 10px 14px -7px black; }
+
+.error {
+    background-color: rgb(139,24,39);
+    color: rgb(255,255,255);
+}
+
+.header {    
+    background: linear-gradient(#C4A0A0, #A07777);
+}
