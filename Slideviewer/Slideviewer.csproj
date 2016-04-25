@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\sliderviewer.css" />
+    <Content Include="Scripts\common.js" />
     <Content Include="Scripts\jquery.timer.js" />
     <Content Include="slideviewer.html" />
     <Content Include="client.html" />
