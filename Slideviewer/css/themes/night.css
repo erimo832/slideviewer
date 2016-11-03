@@ -1,0 +1,36 @@
+﻿body {
+    margin: 0;
+    background-color: #343434;
+    color: #AAAAAA;    
+}
+
+/*
+ul {
+    list-style-type: none;
+    padding-left: 0em;
+    margin: 0px;
+}
+
+ul li, div {
+    color: #AAAAAA;
+}
+
+.critical { 
+    color: #DDDDDD; 
+    font-size: 1.1em;
+}
+
+.time {
+    float: left;
+    padding-right: 0.5em;
+}
+
+
+.chart-color {
+    color: rgba(221,221,221,0.8);
+}
+
+.chart-grid-color {
+    color: rgba(221,221,221,0.8);
+}
+    */

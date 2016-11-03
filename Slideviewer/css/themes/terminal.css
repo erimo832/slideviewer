@@ -1,0 +1,46 @@
+﻿body {
+    margin: 0;
+    background-color: #040404;
+    
+    color: #02FF04;
+    font-family: "terminal", sans-serif !important;    
+    /*font: normal 18pt/24px "terminal", sans-serif !important;*/
+	/*letter-spacing: 0px;*/    
+}
+
+/*
+ul {
+    list-style-type: none;
+    padding-left: 0em;
+    margin: 0px;
+}
+
+ul li {
+    color: #02FF04;
+}
+
+.critical {
+    
+    color: #02FF04;
+    background-color: #040404;
+    font-size: 1.1em;
+}
+
+.time {
+    float: left;
+    padding-right: 0.5em;
+}
+
+.chart-color {
+    color: rgba(2,255,4,0.8);
+}
+
+.chart-grid-color {
+    color: rgba(2,255,4,0.8);
+}*/
+
+
+@font-face {       
+	 font-family: "terminal";
+	 src: url("/css/themes/terminal/Glass_TTY_VT220.ttf") format("truetype");
+}

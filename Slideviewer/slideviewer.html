@@ -3,6 +3,7 @@
 <head>
     <title></title>
     <link href="/css/sliderviewer.css" rel="stylesheet" />
+    <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
 
     <script src="/Scripts/jquery-3.1.1.js"></script>
     <script src="/Scripts/jquery.signalR-2.2.1.js"></script>
@@ -10,200 +11,225 @@
 
     <script src="/Scripts/jquery.timer.js"></script>
     <script src="/Scripts/common.js"></script>
+    <script src="Scripts/theme.js"></script>  
 
     <script type="text/javascript">
-    $(function () {
+        $(function () {
+            var msg =
+                        "<p>I need parameters to work! </p>" +
+                        "Valid parameters:<br />" +
+                        " - name <br />" +
+                        " - theme (name of theme on server. Avalible themes: 'c64', 'light', 'lightcream', 'night', 'nightcream', 'sand', 'terminal') <br />" +
+                        " - size (base font-size) <br />" +
+                        " - width <br />" +
+                        " - height <br />";
+
         
-        var slides = null;
-        var timer = null;
+            var slides = null;
+            var timer = null;
 
-        //replace with start and stop of timer
-        //https://github.com/jchavannes/jquery-timer
-        var timer = $.timer(function () {
-            showSlide();
-        });
+            var style = "";
+
+            //replace with start and stop of timer
+            //https://github.com/jchavannes/jquery-timer
+            var timer = $.timer(function () {
+                showSlide();
+            });
 
 
-        // Declare a proxy to reference the hub.
-        var chat = $.connection.commandHub;
+            // Declare a proxy to reference the hub.
+            var chat = $.connection.commandHub;
         
-        $('#frameholder').hide();
-        $('#iframe').hide();
-        $('#serverStatus').hide();
+            $('#frameholder').hide();
+            $('#iframe').hide();
+            $('#video').hide();
+            $('#serverStatus').hide();
         
-        function registerToServer() {
-            var name = getQueryParam("name");
+            function registerToServer() {
+                var name = getQueryParam("name");
 
-            if (name == null) {
-                name = $('#clientName').val();
-            }
+                if (name == null) {
+                    name = $('#clientName').val();                    
+                }
 
-            chat.server.registerToEvents(name);
+                var width = getQueryParam("width", 800);
+                var height = getQueryParam("height", 800);
+                
+                style = 'max-width: ' + width + 'px; max-height: ' + height + 'px;';                
+                $('#video').css('max-width', width);
+                $('#video').css('max-height', height);
+
+                chat.server.registerToEvents(name);
             
 
-            $('#clientName').hide();
-            $('#register').hide();
+                $('#clientName').hide();
+                $('#register').hide();
 
-            chat.server.getSlideshow(name);
-        }
+                chat.server.getSlideshow(name);
+            }
 
-        function showSlide() {
-            if (slides != null) {
-                var num = Math.round((Math.random() * (slides.length - 1)));
+            function showSlide() {
+                if (slides != null) {
+                    var num = Math.round((Math.random() * (slides.length - 1)));
 
-                var obj = slides[num];
+                    var obj = slides[num];
 
-                //Type
+                    //Type
 
-                if (obj.Type == "message") {
-                    $('#frameholder').hide();
-                    $('#iframe').hide();
-                    $('#video').hide();
+                    if (obj.Type == "message") {
+                        $('#frameholder').hide();
+                        $('#iframe').hide();
+                        $('#video').hide();
 
-                    $('#message').html("<div style=\"" + obj.Css + "\">" + obj.Value + "</div>");
-                    $('#message').show();
-                }
+                        $('#message').html("<div style=\"" + style + "\">" + obj.Value + "</div>");
+                        $('#message').show();
+                    }
 
-                if (obj.Type == "image") {
-                    $('#frameholder').hide();
-                    $('#iframe').hide();
-                    $('#video').hide();
+                    if (obj.Type == "image") {
+                        $('#frameholder').hide();
+                        $('#iframe').hide();
+                        $('#video').hide();
 
-                    $('#message').html('<image id="image" src="' + obj.Value + '" style="' + obj.Css + '" />');
-                    $('#message').show();
-                }
+                        $('#message').html('<image id="image" src="' + obj.Value + '" style="' + style + '" />');
+                        $('#message').show();
+                    }
 
-                if (obj.Type == "url") {
-                    $('#message').hide();
-                    $('#video').hide();
+                    if (obj.Type == "url") {
+                        $('#message').hide();
+                        $('#video').hide();
 
-                    $('#iframe').attr('src', obj.Value);
-                    $('#frameholder').show();
-                    $('#iframe').show();
-                }
+                        $('#iframe').attr('src', obj.Value);
+                        $('#frameholder').show();
+                        $('#iframe').show();
+                    }
 
-                if (obj.Type.startsWith("video")) {
-                    $('#message').hide();
-                    $('#frameholder').hide();
-                    $('#iframe').hide();
+                    if (obj.Type.startsWith("video")) {
+                        $('#message').hide();
+                        $('#frameholder').hide();
+                        $('#iframe').hide();
                             
-                    $('#videoSrc').remove();
-                    $('#video').html('<source id="videoSrc" src="' + obj.Value + '" type="' + obj.Type + '" />');                                   
-                    $('#video')[0].load();
-                    $('#video').show();
+                        $('#videoSrc').remove();                        
+                        $('#video').html('<source id="videoSrc" src="' + obj.Value + '" type="' + obj.Type + '" />');                                   
+                        $('#video')[0].load();
+                        $('#video').show();
+                    }
                 }
             }
-        }
 
-        /*******************************************
-        * register server events
-        *******************************************/
+            /*******************************************
+            * register server events
+            *******************************************/
         
-        chat.client.newMessage = function (message) {        
-            var encodedMsg = $('<div />').text(message).html();
+            chat.client.newMessage = function (message) {        
+                var encodedMsg = $('<div />').text(message).html();
 
-            $('#serverStatus').text(encodedMsg);
-            $('#serverStatus').show();
+                $('#serverStatus').text(encodedMsg);
+                $('#serverStatus').show();
 
-            //Show for only 10sec
-            setTimeout(function () {
-                $('#serverStatus').hide();
-            }, 10000);
-        };
+                //Show for only 10sec
+                setTimeout(function () {
+                    $('#serverStatus').hide();
+                }, 10000);
+            };
 
-        chat.client.newCommand = function (json) {
-            var cmd = jQuery.parseJSON(json);
+            chat.client.newCommand = function (json) {
+                var cmd = jQuery.parseJSON(json);
 
-            if (cmd.Message != "") {
-                $('#frameholder').hide();
-                $('#iframe').hide();
+                if (cmd.Message != "") {
+                    $('#frameholder').hide();
+                    $('#iframe').hide();
 
-                $('#message').html("<div style=\"" + cmd.MessageCss + "\">" + cmd.Message + "</div>");
-                $('#message').show();
-            }
+                    $('#message').html("<div style=\"" + style + "\">" + cmd.Message + "</div>");
+                    $('#message').show();
+                }
 
-            if (cmd.Url != "") {
-                $('#message').hide();
+                if (cmd.Url != "") {
+                    $('#message').hide();
 
-                $('#iframe').attr('src', cmd.Url);
-                $('#frameholder').show();
-                $('#iframe').show();                
-            }
-        };
+                    $('#iframe').attr('src', cmd.Url);
+                    $('#frameholder').show();
+                    $('#iframe').show();                
+                }
+            };
         
-        chat.client.slidesChanged = function (json) {
-            slides = jQuery.parseJSON(json);
+            chat.client.slidesChanged = function (json) {
+                slides = jQuery.parseJSON(json);
             
-            //start slideshow
-            showSlide();
+                //start slideshow
+                showSlide();
 
-            //start timer (10 min)           
-            timer.set({ time: 600000, autostart: true });
-        };
+                //start timer (10 min)           
+                timer.set({ time: 600000, autostart: true });
+            };
 
                 
-        // Start the connection.
-        $.connection.hub.start().done(function () {
-            //check if name in query string
-            if (getQueryParam("name") != null) {
-                registerToServer();
-            }
-
-            $('#register').click(function () {                
-                registerToServer();
-            });
-        });
-
-        
-        $.connection.hub.disconnected(function () {            
-            $('#serverStatus').text("disconnected from server, lasterror: " + $.connection.hub.lastError.message);
-            $('#serverStatus').show();
-                    
-            //reconnect
-            setTimeout(function () {
-                $.connection.hub.start().done(function () {            
+            // Start the connection.
+            $.connection.hub.start().done(function () {
+                //check if name in query string
+                if (getQueryParam("name") != null) {
                     registerToServer();
-                    $('#serverStatus').hide();
+                    $('#message').hide();
+                }
+                else {
+                    $('#message').html(msg);
+                    $('#message').show();
+                }
+
+                $('#register').click(function () {                
+                    registerToServer();
                 });
-            }, 5000); // Restart connection after 5 seconds.
-            
-        });
+            });
+
         
-        $.connection.hub.reconnecting(function () {
-            $('#serverStatus').text("reconnecting to server");
-            $('#serverStatus').show();
-        });
+            $.connection.hub.disconnected(function () {            
+                $('#serverStatus').text("disconnected from server, lasterror: " + $.connection.hub.lastError.message);
+                $('#serverStatus').show();
+                    
+                //reconnect
+                setTimeout(function () {
+                    $.connection.hub.start().done(function () {            
+                        registerToServer();
+                        $('#serverStatus').hide();
+                    });
+                }, 5000); // Restart connection after 5 seconds.
+            
+            });
+        
+            $.connection.hub.reconnecting(function () {
+                $('#serverStatus').text("reconnecting to server");
+                $('#serverStatus').show();
+            });
 
-        $.connection.hub.reconnected(function () {            
-            $('#serverStatus').text("reconnected to server");
-            $('#serverStatus').show();
-            registerToServer();
+            $.connection.hub.reconnected(function () {            
+                $('#serverStatus').text("reconnected to server");
+                $('#serverStatus').show();
+                registerToServer();
 
-            //Show for only 10sec
-            setTimeout(function () {
-                $('#serverStatus').hide();
-            }, 10000);
-        });
+                //Show for only 10sec
+                setTimeout(function () {
+                    $('#serverStatus').hide();
+                }, 10000);
+            });
 
 
-        $(document).ready(function () {
-            $('#message').click(function () {
-                showSlide();
+            $(document).ready(function () {
+                $('#message').click(function () {
+                    showSlide();
+                });
+            });
+
+            $(document).ready(function () {
+                $('#refresh').click(function () {
+                    showSlide();
+                });
+            });
+
+            $(document).ready(function () {
+                $('#video').click(function () {
+                    showSlide();
+                });
             });
         });
-
-        $(document).ready(function () {
-            $('#refresh').click(function () {
-                showSlide();
-            });
-        });
-
-        $(document).ready(function () {
-            $('#video').click(function () {
-                showSlide();
-            });
-        });
-    });
     </script>
 
 </head>

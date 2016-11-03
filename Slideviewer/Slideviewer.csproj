@@ -94,7 +94,22 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\sliderviewer.css" />
+    <Content Include="css\themes\c64.css" />
+    <Content Include="css\themes\default.css" />
+    <Content Include="css\themes\light.css" />
+    <Content Include="css\themes\lightcream.css" />
+    <Content Include="css\themes\night.css" />
+    <Content Include="css\themes\nightcream.css" />
+    <Content Include="css\themes\sand.css" />
+    <Content Include="css\themes\terminal.css" />
     <Content Include="Scripts\common.js" />
+    <Content Include="css\themes\terminal\Glass_TTY_VT220.ttf" />
+    <Content Include="css\themes\c64\C64_Pro_Mono_v1.0-STYLE.eot" />
+    <Content Include="css\themes\c64\C64_Pro_Mono_v1.0-STYLE.ttf" />
+    <Content Include="css\themes\c64\C64_Pro_Mono_v1.0-STYLE.woff" />
+    <Content Include="css\themes\c64\C64_User_v1.0-STYLE.eot" />
+    <Content Include="css\themes\c64\C64_User_v1.0-STYLE.ttf" />
+    <Content Include="css\themes\c64\C64_User_v1.0-STYLE.woff" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
@@ -103,6 +118,7 @@
     <Content Include="Scripts\jquery.signalR-2.2.1.js" />
     <Content Include="Scripts\jquery.signalR-2.2.1.min.js" />
     <Content Include="Scripts\jquery.timer.js" />
+    <Content Include="Scripts\theme.js" />
     <Content Include="slideviewer.html" />
     <Content Include="client.html" />
     <Content Include="css\theme\gothouses.css" />
