@@ -12,9 +12,8 @@ namespace ControlHub.Repository
         public static IList<Slide> GetSlideShow(string name)
         {
             string path = string.Format("slideshows/{0}/", name);
-
             var o = new DirectoryInfo(string.Format("{0}{1}", System.Web.HttpRuntime.AppDomainAppPath, path));
-
+                        
             var result = new List<Slide>();
 
             foreach (var item in o.GetFiles())
@@ -49,6 +48,33 @@ namespace ControlHub.Repository
                     result.Add(new Slide 
                     { 
                         Type = "image",
+                        Css = "max-width: 100%; max-height: 820px;", // move somewhere else
+                        Value = string.Format("{0}{1}", path, item.Name)
+                    });
+                }
+                else if (item.FullName.ToLower().EndsWith("mp4"))
+                {
+                    result.Add(new Slide
+                    {
+                        Type = "video/mp4",
+                        Css = "max-width: 100%; max-height: 820px;", // move somewhere else
+                        Value = string.Format("{0}{1}", path, item.Name)
+                    });
+                }
+                else if (item.FullName.ToLower().EndsWith("webm"))
+                {
+                    result.Add(new Slide
+                    {
+                        Type = "video/webm",
+                        Css = "max-width: 100%; max-height: 820px;", // move somewhere else
+                        Value = string.Format("{0}{1}", path, item.Name)
+                    });
+                }
+                else if (item.FullName.ToLower().EndsWith("ogg"))
+                {
+                    result.Add(new Slide
+                    {
+                        Type = "video/ogg",
                         Css = "max-width: 100%; max-height: 820px;", // move somewhere else
                         Value = string.Format("{0}{1}", path, item.Name)
                     });

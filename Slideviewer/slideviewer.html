@@ -58,6 +58,7 @@
                 if (obj.Type == "message") {
                     $('#frameholder').hide();
                     $('#iframe').hide();
+                    $('#video').hide();
 
                     $('#message').html("<div style=\"" + obj.Css + "\">" + obj.Value + "</div>");
                     $('#message').show();
@@ -66,6 +67,7 @@
                 if (obj.Type == "image") {
                     $('#frameholder').hide();
                     $('#iframe').hide();
+                    $('#video').hide();
 
                     $('#message').html('<image id="image" src="' + obj.Value + '" style="' + obj.Css + '" />');
                     $('#message').show();
@@ -73,10 +75,22 @@
 
                 if (obj.Type == "url") {
                     $('#message').hide();
+                    $('#video').hide();
 
                     $('#iframe').attr('src', obj.Value);
                     $('#frameholder').show();
                     $('#iframe').show();
+                }
+
+                if (obj.Type.startsWith("video")) {
+                    $('#message').hide();
+                    $('#frameholder').hide();
+                    $('#iframe').hide();
+
+                    $('#videoSrc').attr('src', obj.Value);
+                    $('#videoSrc').attr('type', obj.Type);
+                    $('#video').show();
+                    $('#video').load();
                 }
             }
         }
@@ -183,6 +197,12 @@
                 showSlide();
             });
         });
+
+        $(document).ready(function () {
+            $('#video').click(function () {
+                showSlide();
+            });
+        });
     });
     </script>
 
@@ -201,5 +221,12 @@
         <div id="refresh">refresh</div>      
         <iframe id="iframe" src="" style="" class="iframe"></iframe>
     </div>
+
+    <div id="videoholder">
+        <video id="video" autoplay loop muted controls>
+            <source id="videoSrc" src="" type="video/mp4" />
+        </video>
+    </div>
+
 </body>
 </html>
