@@ -110,6 +110,7 @@
     <Content Include="css\themes\c64\C64_User_v1.0-STYLE.eot" />
     <Content Include="css\themes\c64\C64_User_v1.0-STYLE.ttf" />
     <Content Include="css\themes\c64\C64_User_v1.0-STYLE.woff" />
+    <None Include="Properties\PublishProfiles\site.pubxml" />
     <None Include="Scripts\jquery-3.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />

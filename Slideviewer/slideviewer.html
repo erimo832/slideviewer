@@ -42,7 +42,7 @@
         
             $('#frameholder').hide();
             $('#iframe').hide();
-            $('#video').hide();
+            $('#videoholder').hide();
             $('#serverStatus').hide();
         
             function registerToServer() {
@@ -56,11 +56,10 @@
                 var height = getQueryParam("height", 800);
                 
                 style = 'max-width: ' + width + 'px; max-height: ' + height + 'px;';                
-                $('#video').css('max-width', width);
-                $('#video').css('max-height', height);
+                //$('#video').css('max-width', width);
+                //$('#video').css('max-height', height);
 
-                chat.server.registerToEvents(name);
-            
+                chat.server.registerToEvents(name);            
 
                 $('#clientName').hide();
                 $('#register').hide();
@@ -79,7 +78,7 @@
                     if (obj.Type == "message") {
                         $('#frameholder').hide();
                         $('#iframe').hide();
-                        $('#video').hide();
+                        $('#videoholder').hide();
 
                         $('#message').html("<div style=\"" + style + "\">" + obj.Value + "</div>");
                         $('#message').show();
@@ -88,7 +87,7 @@
                     if (obj.Type == "image") {
                         $('#frameholder').hide();
                         $('#iframe').hide();
-                        $('#video').hide();
+                        $('#videoholder').hide();
 
                         $('#message').html('<image id="image" src="' + obj.Value + '" style="' + style + '" />');
                         $('#message').show();
@@ -96,7 +95,7 @@
 
                     if (obj.Type == "url") {
                         $('#message').hide();
-                        $('#video').hide();
+                        $('#videoholder').hide();
 
                         $('#iframe').attr('src', obj.Value);
                         $('#frameholder').show();
@@ -108,10 +107,10 @@
                         $('#frameholder').hide();
                         $('#iframe').hide();
                             
-                        $('#videoSrc').remove();                        
-                        $('#video').html('<source id="videoSrc" src="' + obj.Value + '" type="' + obj.Type + '" />');                                   
-                        $('#video')[0].load();
-                        $('#video').show();
+                        $('#video').remove();
+                        $('#videoholder').html('<video id="video" autoplay loop muted controls style="' + style + '"><source id="videoSrc" src="' + obj.Value + '" type="' + obj.Type + '" /></video>');
+                        //$('#videoholder')[0].load();
+                        $('#videoholder').show();
                     }
                 }
             }
@@ -225,7 +224,7 @@
             });
 
             $(document).ready(function () {
-                $('#video').click(function () {
+                $('#videoholder').click(function () {
                     showSlide();
                 });
             });
@@ -249,7 +248,7 @@
     </div>
 
     <div id="videoholder">
-        <video id="video" autoplay loop muted controls>
+        <video id="video" autoplay loop muted controls style="max-height: 1080px; max-width: 1920px;">
             <source id="videoSrc" src="" type="video/mp4" />
         </video>
     </div>
