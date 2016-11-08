@@ -154,6 +154,7 @@
     <Content Include="manager.html" />
     <Content Include="packages.config" />
     <Content Include="Scripts\gothouses.js" />
+    <Content Include="temperature.html" />
     <Content Include="test.html" />
     <Content Include="Web.config" />
   </ItemGroup>
