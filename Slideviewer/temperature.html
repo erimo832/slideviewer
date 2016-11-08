@@ -14,21 +14,21 @@
 
     <script type="text/javascript">
         $(function () {
+            var sites;
+            var removesuffix = false;
+
             //replace with start and stop of timer
             //https://github.com/jchavannes/jquery-timer
             var timer = $.timer(function () {
                 updateTemp();
             });
-
+            
             function updateTemp() {
-                var sites = getQueryParam('sites');
-                
                 if (sites) {
                     var url = "http://api.temperatur.nu/tnu_1.12.php?p=" + sites + "&verbose&cli=test_app";
 
                     $.get(url, function (data) {
-                        var output = '<table>';
-
+                        var output = '<div id="table">';
                         $(data).find("item").each(function () {
                             var el = $(this);
 
@@ -37,10 +37,20 @@
                             var info = el.find("sourceInfo").text();
                             var lastUpd = el.find("lastUpdate").text();
 
-                            output += '<tr><td><span href="#" data-toggle="tooltip" title="' + info + '">' + name + '</span>:</td><td><span href="#" data-toggle="tooltip" title="' + lastUpd + '">' + temp + '</span></td></tr>';
+                            var fullName = name;
+
+                            if (removesuffix)
+                            {
+                                var index = name.indexOf("/");
+                                if (index > 0) {
+                                    name = name.substring(0, index);
+                                }
+                            }
+                                    
+                            output += '<div class="row"><div class="col-xs-6" data-toggle="tooltip" title="' + fullName + ', ' + info + '">' + name + ':</div><div class="col-xs-6" data-toggle="tooltip" title="' + lastUpd + '">' + temp + '</div></div>';
                         });
 
-                        output += "</table>";
+                        output += "</div>";
 
                         $("#table").remove();
                         $("#temptable").html(output);
@@ -52,6 +62,13 @@
             }
 
             $(document).ready(function () {
+                //Set some base params
+                sites = getQueryParam('sites');
+                removesuffix = getQueryParam('removesuffix');
+                
+                if (removesuffix == "1")
+                    removesuffix = true;
+
                 updateTemp();
             });
 
@@ -59,12 +76,13 @@
     </script>
 </head>
 <body>
-    <div id="temptable">
+    <div id="temptable" class="container-fluid">
         <p>I need parameters to work! </p>
         Valid parameters:<br />
         - sites (ex: skovde,falkoping,overryd5) <br />
         - theme (name of theme on server. Avalible themes: 'c64', 'light', 'lightcream', 'night', 'nightcream', 'sand', 'terminal') <br />
         - size (base font-size) <br />
+        - removesuffix (1/0) <br />
     </div>
 </body>
 </html>
