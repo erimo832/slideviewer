@@ -3,16 +3,17 @@
 <head>
     <title></title>
     <link href="/css/sliderviewer.css" rel="stylesheet" />
+    <link href="Content/bootstrap.css" rel="stylesheet" />
     <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
-
+    
     <script src="/Scripts/jquery-3.1.1.js"></script>
     <script src="/Scripts/jquery.timer.js"></script>
     <script src="/Scripts/common.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
     <script src="Scripts/theme.js"></script>  
 
     <script type="text/javascript">
         $(function () {
-
             //replace with start and stop of timer
             //https://github.com/jchavannes/jquery-timer
             var timer = $.timer(function () {
@@ -21,32 +22,33 @@
 
             function updateTemp() {
                 var sites = getQueryParam('sites');
+                
+                if (sites) {
+                    var url = "http://api.temperatur.nu/tnu_1.12.php?p=" + sites + "&verbose&cli=test_app";
 
-                var url = "http://api.temperatur.nu/tnu_1.12.php?p=" + sites + "&verbose&cli=test_app";
+                    $.get(url, function (data) {
+                        var output = '<table>';
 
-                $.get(url, function (data) {
-                    //$(".result").html(data);
-                    //var x = $(data).find("temp").text();
-                    //alert(x);
-                    var output = '<table>';
+                        $(data).find("item").each(function () {
+                            var el = $(this);
 
-                    $(data).find("item").each(function () {
-                        var el = $(this);
+                            var name = el.find("title").text();
+                            var temp = el.find("temp").text();
+                            var info = el.find("sourceInfo").text();
+                            var lastUpd = el.find("lastUpdate").text();
 
-                        var name = el.find("title").text();
-                        var temp = el.find("temp").text()
+                            output += '<tr><td><span href="#" data-toggle="tooltip" title="' + info + '">' + name + '</span>:</td><td><span href="#" data-toggle="tooltip" title="' + lastUpd + '">' + temp + '</span></td></tr>';
+                        });
 
-                        output += '<tr><td>' + name + ':</td><td>' + temp + '</td></tr>';
+                        output += "</table>";
+
+                        $("#table").remove();
+                        $("#temptable").html(output);
+
+                        //start timer (10 min)           
+                        timer.set({ time: 600000, autostart: true });
                     });
-
-                    output += "</table>";
-                    
-                    $("#table").remove();
-                    $("#temptable").html(output);
-
-                    //start timer (10 min)           
-                    timer.set({ time: 600000, autostart: true });
-                });                   
+                }
             }
 
             $(document).ready(function () {
