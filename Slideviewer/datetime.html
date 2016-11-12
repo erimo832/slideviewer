@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>datetime</title>
+
+    <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
+
+    <script src="/Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/jquery.timer.js"></script>
+    <script src="/Scripts/common.js"></script>
+    <script src="Scripts/theme.js"></script>  
+
+    <script src="Scripts/moment-with-locales.min.js"></script>        
+    <script src="Scripts/moment-timezone-with-data.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(function () {
+            //default parameters
+            var style;
+            var format;
+            var timezone;
+            var culture;
+
+            //replace with start and stop of timer
+            //https://github.com/jchavannes/jquery-timer
+            var timer = $.timer(function () {
+                displayDatetime();
+            });
+
+            function displayDatetime() {                
+                try {
+                    var date = new Date();
+
+                    //Check if set timezone
+                    if (timezone !== "") {
+                        date = moment().tz(timezone);
+                    }
+
+                    document.getElementById("time").innerHTML = moment(date).locale(culture).format(format);
+
+                    //Set style
+                    document.getElementById("time").style.cssText = style;
+                }
+                catch (err) {
+                    /*Do nothing, avoid premission denied exception during edit*/
+                }
+            }
+
+            $(document).ready(function () {
+                var query = location.search.substring(1);
+
+                if (query.length > 0) {
+
+                    //Set some base params
+                    style = getQueryParam('style', 'HH:MM:ss');
+                    format = getQueryParam('format', 'HH:MM:ss');
+                    timezone = getQueryParam('timezone', 'Europe/Stockholm');
+                    culture = getQueryParam('culture', 'en');
+
+                    //start timer (1 sec)           
+                    timer.set({ time: 1000, autostart: true });
+
+                    $("#config").remove();
+
+                    displayDatetime();
+                }
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <div id="time"></div>
+    <div id="config">
+        <p> 
+            <b>Howto configure:</b>
+        </p>
+        Url example: <br />
+        datetime.htm?format=xxx&style=xxx&timezone=xxx&culture=xxx <br />
+        Parameters:<br />
+        <ul>
+            <li>format - datetime format (common formats: HH:mm, YYYY-MM-DD)(http://momentjs.com/ , http://www.hnwatcher.com/r/1771672/Date-Time-Format-Generator-js-php-ruby/)</li>
+            <li>culture - What language (example: en, sv, fr, nl, pt-br, ja and more).</li>
+            <li>timezone - Set a timezone (example: Europe/Stockholm, America/Sao_Paulo and more) (see map on page for valid timezones: http://momentjs.com/timezone/) </li>
+            <li>style - css-style that is used (http://www.w3schools.com/css/default.asp)</li>
+        </ul>
+    </div>
+
+</body>
+</html>

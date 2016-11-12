@@ -7,7 +7,7 @@ $(document).ready(function () {
         $("head link#theme").attr("href", "/css/themes/" + theme + ".css");
     }
 
-    var size = getQueryParam("size", 60);
+    var size = getQueryParam("size", 30);
 
     if (!(size == null || size == "")) {
         $("body").css("font-size", size + "px");

@@ -54,9 +54,6 @@
 
                         $("#table").remove();
                         $("#temptable").html(output);
-
-                        //start timer (10 min)           
-                        timer.set({ time: 600000, autostart: true });
                     });
                 }
             }
@@ -68,6 +65,9 @@
                 
                 if (removesuffix == "1")
                     removesuffix = true;
+
+                //start timer (10 min)           
+                timer.set({ time: 600000, autostart: true });
 
                 updateTemp();
             });
