@@ -37,10 +37,7 @@
                         date = moment().tz(timezone);
                     }
 
-                    document.getElementById("time").innerHTML = moment(date).locale(culture).format(format);
-
-                    //Set style
-                    document.getElementById("time").style.cssText = style;
+                    $("#time").html(moment(date).locale(culture).format(format));
                 }
                 catch (err) {
                     /*Do nothing, avoid premission denied exception during edit*/
@@ -57,6 +54,16 @@
                     format = getQueryParam('format', 'HH:MM:ss');
                     timezone = getQueryParam('timezone', 'Europe/Stockholm');
                     culture = getQueryParam('culture', 'en');
+                    name = getQueryParam('name', '');
+
+                    //Set style
+                    document.getElementById("time").style.cssText = style;
+
+                    if (name) {
+                        $("#name").html(name);
+                    } else {
+                        $("#name").remove();
+                    }
 
                     //start timer (1 sec)           
                     timer.set({ time: 1000, autostart: true });
@@ -71,6 +78,7 @@
     </script>
 </head>
 <body>
+    <div id="name"></div>
     <div id="time"></div>
     <div id="config">
         <p> 
@@ -84,6 +92,7 @@
                 <li>culture - What language (example: en, sv, fr, nl, pt-br, ja and more).</li>
                 <li>timezone - Set a timezone (example: Europe/Stockholm, America/Sao_Paulo and more) (see map on page for valid timezones: http://momentjs.com/timezone/) </li>
                 <li>style - css-style that is used (http://www.w3schools.com/css/default.asp)</li>
+                <li>name - a text that is show above the time</li>
             </ul>
         </p>
     </div>
