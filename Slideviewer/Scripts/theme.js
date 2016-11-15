@@ -12,4 +12,12 @@ $(document).ready(function () {
     if (!(size == null || size == "")) {
         $("body").css("font-size", size + "px");
     }
+
+    var altsize = getQueryParam("altsize");
+
+    if (altsize) {
+        $('.altsize').each(function () {
+            $(this).css("font-size", altsize + "px");
+        });
+    }
 });

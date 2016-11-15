@@ -33,3 +33,13 @@ function getQueryParam(paramName, defaultValue) {
 
     return null;
 }
+
+function updateAltSize() {
+    var altsize = getQueryParam("altsize");
+
+    if (altsize) {
+        $('.altsize').each(function () {
+            $(this).css("font-size", altsize + "px");
+        });
+    }
+}

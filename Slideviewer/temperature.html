@@ -16,6 +16,7 @@
         $(function () {
             var sites;
             var removesuffix = false;
+            var type;
 
             //replace with start and stop of timer
             //https://github.com/jchavannes/jquery-timer
@@ -29,6 +30,11 @@
 
                     $.get(url, function (data) {
                         var output = '<div id="table">';
+
+                        if (type == "table") {
+                            output = '<table>'
+                        }
+
                         $(data).find("item").each(function () {
                             var el = $(this);
 
@@ -46,14 +52,28 @@
                                     name = name.substring(0, index);
                                 }
                             }
-                                    
-                            output += '<div class="row"><div class="col-xs-6" data-toggle="tooltip" title="' + fullName + ', ' + info + '">' + name + ':</div><div class="col-xs-6" data-toggle="tooltip" title="' + lastUpd + '">' + temp + '</div></div>';
+                                
+                            if (type == "bootstraptable") {
+                                output += '<div class="row"><div class="col-xs-6 altsize" data-toggle="tooltip" title="' + fullName + ', ' + info + '">' + name + ':</div><div class="col-xs-6" data-toggle="tooltip" title="' + lastUpd + '">' + temp + '</div></div>';
+                            }
+                            else if (type == "table") {
+                                output += '<tr><td class="altsize" data-toggle="tooltip" title="' + fullName + ', ' + info + '">' + name + '</td><td data-toggle="tooltip" title="' + lastUpd + '">' + temp + '</td></tr>';
+                            }
+                            else if (type == "rows") {
+                                output += '<div class="row altsize" data-toggle="tooltip" title="' + fullName + ', ' + info + '">' + name + '</div><div class="row" data-toggle="tooltip" title="' + lastUpd + '">' + temp + '</div>';
+                            }
                         });
 
-                        output += "</div>";
+                        if (type == "table") {
+                            output += "</table>";
+                        } else {
+                            output += "</div>";
+                        }
 
                         $("#table").remove();
                         $("#temptable").html(output);
+
+                        updateAltSize();
                     });
                 }
             }
@@ -62,12 +82,14 @@
                 //Set some base params
                 sites = getQueryParam('sites');
                 removesuffix = getQueryParam('removesuffix');
+                type = getQueryParam('type', 'bootstraptable');
+                               
                 
                 if (removesuffix == "1")
                     removesuffix = true;
 
-                //start timer (10 min)           
-                timer.set({ time: 600000, autostart: true });
+                //start timer (15 min)           
+                timer.set({ time: 900000, autostart: true });
 
                 updateTemp();
             });
@@ -82,7 +104,9 @@
         - sites (ex: skovde,falkoping,overryd5) <br />
         - theme (name of theme on server. Avalible themes: 'c64', 'light', 'lightcream', 'night', 'nightcream', 'sand', 'terminal') <br />
         - size (base font-size) <br />
+        - altsize (font-size, for items with class='altsize') <br />
         - removesuffix (1/0) <br />
+        - type (table, rows, bootstraptable)
     </div>
 </body>
 </html>
