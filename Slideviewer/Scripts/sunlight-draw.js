@@ -54,16 +54,30 @@ function drawCircle(ctx, cx, cy, r, fill) {
     ctx.stroke();
 }
 
-function draw(width, height, imgEdgeOffset) {
+function drawDual(width, height, imgEdgeOffset, dayMapPath, nightMapPath) {
     mapWidth = width;
     mapHeight = height;
 
     adjustParameters(imgEdgeOffset);
 
+    var nightMap = new Image();
+    nightMap.src = nightMapPath;
+   
+    mapImage = new Image();
+    mapImage.onload = function () { drawDualDayNightMap(mapImage, nightMap) };
+    mapImage.src = dayMapPath;
+       
+}
+
+function drawSingle(width, height, imgEdgeOffset, imgPath) {
+    mapWidth = width;
+    mapHeight = height;
+
+    adjustParameters(imgEdgeOffset);
+        
     mapImage = new Image();
     mapImage.onload = function () { drawDayNightMap(mapImage) };
-    mapImage.src = "/images/sunlight/day_2000x1000.jpg";
-       
+    mapImage.src = imgPath;
 }
 
 
@@ -105,4 +119,56 @@ function drawDayNightMap(mapImage) {
 
     drawCircle(ctx, pixelX(GHAsun), pixelY(DECsun), 5, "#FFFF00");
     drawCircle(ctx, pixelX(GHAmoon), pixelY(DECmoon), 5, "#FFFFFF");
+}
+
+function drawDualDayNightMap(dayImg, nightImg) {
+    //prep night
+    var tmpMap = document.getElementById("tmpMap");
+    tmpMap.width = mapWidth;
+    tmpMap.height = mapHeight;
+    var ctxTmpRes = tmpMap.getContext("2d");
+    ctxTmpRes.drawImage(nightImg, 0, 0, mapWidth, mapHeight);
+
+
+    var map = document.getElementById("map");
+    
+    map.width = mapWidth;
+    map.height = mapHeight;
+    var ctxRes = map.getContext("2d");
+
+    ctxRes.drawImage(dayImg, 0, 0, mapWidth, mapHeight);
+
+    performCalculations(new Date());
+
+    var northSun = DECsun >= 0;
+    var startFrom = northSun ? 0 : (mapHeight - 1);
+    var pstop = function (y) { return northSun ? (y < mapHeight) : (y >= 0); };
+    var inc = northSun ? 1 : -1;
+
+    //ctxRes.fillStyle = "rgba(0, 0, 0, 0.5)";
+
+    for (var x = 0; x < mapWidth; ++x)
+        for (var y = startFrom; pstop(y) ; y += inc) {
+            var lambda = pixelLambda(x);
+            var phi = pixelPhi(y) + 0.5 * (northSun ? -1 : 1);
+
+            var centralAngle = sind(phi) * sind(DECsun)
+							 + cosd(phi) * cosd(DECsun) * cosd(GHAsun - lambda);
+            centralAngle = Math.acos(centralAngle);
+
+            if (centralAngle > Math.PI / 2) {
+                var rectTop = northSun ? y : 0;
+                var rectHeight = northSun ? mapHeight - rectTop : y + 1;
+
+                var crop = ctxTmpRes.getImageData(x, rectTop, 1, rectHeight);
+
+                ctxRes.putImageData(crop, x, rectTop);
+                //ctxRes.fillRect(x, rectTop, 1, rectHeight);
+
+                break;
+            }
+        }
+
+    drawCircle(ctxRes, pixelX(GHAsun), pixelY(DECsun), 5, "#FFFF00");
+    drawCircle(ctxRes, pixelX(GHAmoon), pixelY(DECmoon), 5, "#FFFFFF");
 }

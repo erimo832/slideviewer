@@ -11,27 +11,28 @@
     <script src="/Scripts/jquery.timer.js"></script>
     <script src="/Scripts/common.js"></script>    
     <script src="Scripts/theme.js"></script>  
-
-
     <script type="text/javascript">
 
     $(function () {
         //default parameters
         var width;
-        var height;        
+        var height;
+        var dayimg;
+        var nightimg;
+        var usenightmap;
 
         //replace with start and stop of timer
         //https://github.com/jchavannes/jquery-timer
         var timer = $.timer(function () {
             drawMap();
         });
-
-
+        
         function drawMap() {
-            try {
-
-                //draw original size
-                draw(width, height, -5.0);
+            try {                
+                if (usenightmap == "1")
+                    drawDual(width, height, -3.0, dayimg, nightimg);
+                else
+                    drawSingle(width, height, -3.0, dayimg);
             }
             catch (err) {
                 /*Do nothing, avoid premission denied exception during edit*/
@@ -39,28 +40,29 @@
         }
 
         /*
-        - list of images to select from (no need to know original size)
-        - resize images //http://jsfiddle.net/AbdiasSoftware/v8app/
-        - blend nigh/day maps
+        - list of images to select from (no need to know original size)        
         */
 
         $(document).ready(function () {
             var query = location.search.substring(1);
 
-            //if (query.length > 0)
-            {
+            //Set some base params
+            width = getQueryParam('width', '2000');
+            height = getQueryParam('height', '1000');
+            usenightmap = getQueryParam('usenightmap', '1');
+            dayimg = getQueryParam('dayimg', 'day_2000x1000.jpg');
+            nightimg = getQueryParam('nightimg', 'night_2400x1200.jpg');
 
-                //Set some base params
-                width = getQueryParam('width', '2000');
-                height = getQueryParam('height', '1000');
+            dayimg = "/images/sunlight/" + dayimg;
+            nightimg = "/images/sunlight/" + nightimg;
                 
-                //start timer (10 sec) TODO: remove *100
-                timer.set({ time: 10000*100, autostart: true });
+            //start timer (60 sec)
+            timer.set({ time: 60000, autostart: true });
 
-                $("#config").remove();
+            $("#config").remove();
+            $("#tmp").hide();
 
-                drawMap();
-            }
+            drawMap();
         });
     });
 
@@ -73,5 +75,11 @@
     <canvas id="map" width="2000" height="1000">
         Your browser does not support HTML5 canvas.
     </canvas>
+
+    <div id="tmp">
+        <canvas id="tmpMap" width="2000" height="1000">
+            Your browser does not support HTML5 canvas.
+        </canvas>
+    </div>
 </body>
 </html>
