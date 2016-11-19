@@ -108,6 +108,9 @@
     <Content Include="css\themes\terminal.css" />
     <Content Include="datetime.html" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="images\sunlight\day_1024x512.jpg" />
+    <Content Include="images\sunlight\day_2000x1000.jpg" />
+    <Content Include="images\sunlight\night_2400x1200.jpg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\common.js" />
@@ -146,6 +149,8 @@
     <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\sunlight-calculations.js" />
+    <Content Include="Scripts\sunlight-draw.js" />
     <Content Include="Scripts\theme.js" />
     <Content Include="slideviewer.html" />
     <Content Include="client.html" />
@@ -181,9 +186,12 @@
     <Content Include="manager.html" />
     <Content Include="packages.config" />
     <Content Include="Scripts\gothouses.js" />
+    <Content Include="sunlight.html" />
     <Content Include="temperature.html" />
     <Content Include="test.html" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\JsonHelper.cs" />

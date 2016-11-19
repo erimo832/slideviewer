@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
+
+    <script src="Scripts/sunlight-calculations.js"></script>
+    <script src="Scripts/sunlight-draw.js"></script>
+    
+    <script src="/Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/jquery.timer.js"></script>
+    <script src="/Scripts/common.js"></script>    
+    <script src="Scripts/theme.js"></script>  
+
+
+    <script type="text/javascript">
+
+    $(function () {
+        //default parameters
+        var width;
+        var height;        
+
+        //replace with start and stop of timer
+        //https://github.com/jchavannes/jquery-timer
+        var timer = $.timer(function () {
+            drawMap();
+        });
+
+
+        function drawMap() {
+            try {
+
+                //draw original size
+                draw(width, height, -5.0);
+            }
+            catch (err) {
+                /*Do nothing, avoid premission denied exception during edit*/
+            }
+        }
+
+        /*
+        - list of images to select from (no need to know original size)
+        - resize images //http://jsfiddle.net/AbdiasSoftware/v8app/
+        - blend nigh/day maps
+        */
+
+        $(document).ready(function () {
+            var query = location.search.substring(1);
+
+            //if (query.length > 0)
+            {
+
+                //Set some base params
+                width = getQueryParam('width', '2000');
+                height = getQueryParam('height', '1000');
+                
+                //start timer (10 sec) TODO: remove *100
+                timer.set({ time: 10000*100, autostart: true });
+
+                $("#config").remove();
+
+                drawMap();
+            }
+        });
+    });
+
+    </script>
+
+
+
+</head>
+<body>
+    <canvas id="map" width="2000" height="1000">
+        Your browser does not support HTML5 canvas.
+    </canvas>
+</body>
+</html>
