@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
+
+    <script src="/Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/jquery.timer.js"></script>
+    <script src="/Scripts/common.js"></script>
+    <script src="Scripts/theme.js"></script>
+    <script type="text/javascript">
+        /*
+        - http://rectangleworld.com/blog/archives/538
+
+        */
+
+        $(function () {
+            // Some global declarations            
+            var canvas = $("#canvas").get(0);
+            var ctx = canvas.getContext("2d");
+
+            var width;
+            var height;
+
+            //https://github.com/jchavannes/jquery-timer
+            var timer = $.timer(function () {
+                addArt();
+            });
+
+            function addArt() {
+                try
+                {
+                    var x = Math.floor(Math.random() * width);
+                    var y = Math.floor(Math.random() * height);
+
+                    var r = Math.floor(Math.random() * 255);
+                    var g = Math.floor(Math.random() * 255);
+                    var b = Math.floor(Math.random() * 255);
+                    var a = Math.random();
+
+
+                    ctx.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a + ")";
+                    //ctx.fillStyle = "rgba(0, 0, 0, 1.0)";
+                    ctx.fillRect(x, y, 1, 1);
+                }
+                catch (err) {
+                    /*Do nothing, avoid premission denied exception during edit*/
+                }
+            }
+
+            $(document).ready(function () {
+
+                width = getQueryParam('width', '471');
+                height = getQueryParam('height', '887');
+
+                ctx.canvas.height = height;
+                ctx.canvas.width = width;
+
+                //start timer (1 sec)
+                timer.set({ time: 1000, autostart: true });
+
+                addArt();
+            });
+
+        });
+    </script>
+
+</head>
+<body style="margin:0px">
+    <canvas id="canvas" height="887" width="471">
+        Your browser does not support HTML5 canvas.
+    </canvas>
+</body>
+</html>
