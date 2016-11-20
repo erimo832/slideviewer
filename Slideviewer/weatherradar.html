@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
+        
+    <script src="/Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/jquery.timer.js"></script>
+    <script src="/Scripts/common.js"></script>
+    <script src="Scripts/theme.js"></script>  
+    <script type="text/javascript">
+        /*
+        http://opendata.smhi.se/apidocs/radar/index.html#examples
+        http://opendata-download-radar.smhi.se/explore/#
+
+        - Add some history and play the history (so we know the direction of rain)       
+
+        */
+
+        $(function () {
+            // Some global declarations
+            var baseLayerPath = "./images/weather/basemap.png";
+            var outlineLayerPath = "./images/weather/outlines.png";
+            var cityLayerPath = "./images/weather/cities.png";
+            var radarPath = "http://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp/latest.png";
+
+            var baseLayer = new Image();
+            baseLayer.src = baseLayerPath;
+
+            var outlineLayer = new Image();
+            outlineLayer.src = outlineLayerPath;
+
+            var cityLayer = new Image();
+            cityLayer.src = cityLayerPath;
+
+            var canvas = $("#canvas").get(0);
+            var ctx = canvas.getContext("2d");
+
+            var width;
+            var height;
+            
+            //https://github.com/jchavannes/jquery-timer
+            var timer = $.timer(function () {
+                drawRadar();
+            });
+
+            function drawRadar() {
+                try
+                {
+                    //clear last image
+                    ctx.clearRect(0, 0, width, height);
+                    
+                    var radarLayer = new Image();
+                    radarLayer.onload = function () {
+                        //draw new
+                        ctx.drawImage(baseLayer, 0, 0, width, height);
+                        ctx.drawImage(outlineLayer, 0, 0, width, height);
+                        ctx.drawImage(cityLayer, 0, 0, width, height);
+                        ctx.drawImage(radarLayer, 0, 0, width, height);
+                    };
+                    radarLayer.src = radarPath;
+                }
+                catch (err) {
+                    /*Do nothing, avoid premission denied exception during edit*/
+                }
+            }
+
+            $(document).ready(function () {
+
+                width = getQueryParam('width', '471');
+                height = getQueryParam('height', '887');
+
+                ctx.canvas.height = height;
+                ctx.canvas.width = width;
+
+                //start timer (5min)
+                timer.set({ time: 300000, autostart: true });
+                
+                drawRadar();
+            });
+
+        });
+    </script>
+
+</head>
+<body>
+    <canvas id="canvas" height="887" width="471">
+        Your browser does not support HTML5 canvas.
+    </canvas>
+</body>
+</html>
