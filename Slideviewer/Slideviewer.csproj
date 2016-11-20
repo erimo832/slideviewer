@@ -112,6 +112,10 @@
     <Content Include="images\sunlight\day_1770x770.jpg" />
     <Content Include="images\sunlight\day_2000x1000.jpg" />
     <Content Include="images\sunlight\night_2400x1200.jpg" />
+    <Content Include="images\weather\basemap.png" />
+    <Content Include="images\weather\cities.png" />
+    <Content Include="images\weather\cities_orginal.png" />
+    <Content Include="images\weather\outlines.png" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\common.js" />
@@ -217,6 +221,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

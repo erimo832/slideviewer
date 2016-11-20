@@ -62,11 +62,12 @@ function drawDual(width, height, imgEdgeOffset, dayMapPath, nightMapPath) {
 
     var nightMap = new Image();
     nightMap.src = nightMapPath;
-   
-    mapImage = new Image();
-    mapImage.onload = function () { drawDualDayNightMap(mapImage, nightMap) };
-    mapImage.src = dayMapPath;
-       
+    nightMap.onload = function () {
+        //make sure both images are loaded
+        mapImage = new Image();
+        mapImage.onload = function () { drawDualDayNightMap(mapImage, nightMap) };
+        mapImage.src = dayMapPath;
+    }; 
 }
 
 function drawSingle(width, height, imgEdgeOffset, imgPath) {
@@ -135,6 +136,7 @@ function drawDualDayNightMap(dayImg, nightImg) {
     map.width = mapWidth;
     map.height = mapHeight;
     var ctxRes = map.getContext("2d");
+
 
     ctxRes.drawImage(dayImg, 0, 0, mapWidth, mapHeight);
 
