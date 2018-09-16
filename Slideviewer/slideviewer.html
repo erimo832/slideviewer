@@ -33,7 +33,7 @@
             //replace with start and stop of timer
             //https://github.com/jchavannes/jquery-timer
             var timer = $.timer(function () {
-                showSlide();
+                showNext();
             });
 
 
@@ -67,51 +67,54 @@
                 chat.server.getSlideshow(name);
             }
 
-            function showSlide() {
+            function showNext() {
                 if (slides != null) {
                     var num = Math.round((Math.random() * (slides.length - 1)));
 
                     var obj = slides[num];
 
-                    //Type
+                    showSlide(obj);
+                }
+            }
+               
+            function showSlide(obj)
+            {
+                if (obj.Type == "message") {
+                    $('#frameholder').hide();
+                    $('#iframe').hide();
+                    $('#videoholder').hide();
 
-                    if (obj.Type == "message") {
-                        $('#frameholder').hide();
-                        $('#iframe').hide();
-                        $('#videoholder').hide();
+                    $('#message').html("<div style=\"" + style + "\">" + obj.Value + "</div>");
+                    $('#message').show();
+                }
 
-                        $('#message').html("<div style=\"" + style + "\">" + obj.Value + "</div>");
-                        $('#message').show();
-                    }
+                if (obj.Type == "image") {
+                    $('#frameholder').hide();
+                    $('#iframe').hide();
+                    $('#videoholder').hide();
 
-                    if (obj.Type == "image") {
-                        $('#frameholder').hide();
-                        $('#iframe').hide();
-                        $('#videoholder').hide();
+                    $('#message').html('<image id="image" src="' + obj.Value + '" style="' + style + '" />');
+                    $('#message').show();
+                }
 
-                        $('#message').html('<image id="image" src="' + obj.Value + '" style="' + style + '" />');
-                        $('#message').show();
-                    }
+                if (obj.Type == "url") {
+                    $('#message').hide();
+                    $('#videoholder').hide();
 
-                    if (obj.Type == "url") {
-                        $('#message').hide();
-                        $('#videoholder').hide();
+                    $('#iframe').attr('src', obj.Value);
+                    $('#frameholder').show();
+                    $('#iframe').show();
+                }
 
-                        $('#iframe').attr('src', obj.Value);
-                        $('#frameholder').show();
-                        $('#iframe').show();
-                    }
+                if (obj.Type.startsWith("video")) {
+                    $('#message').hide();
+                    $('#frameholder').hide();
+                    $('#iframe').hide();
 
-                    if (obj.Type.startsWith("video")) {
-                        $('#message').hide();
-                        $('#frameholder').hide();
-                        $('#iframe').hide();
-                            
-                        $('#video').remove();
-                        $('#videoholder').html('<video id="video" autoplay loop muted controls style="' + style + '"><source id="videoSrc" src="' + obj.Value + '" type="' + obj.Type + '" /></video>');
-                        //$('#videoholder')[0].load();
-                        $('#videoholder').show();
-                    }
+                    $('#video').remove();
+                    $('#videoholder').html('<video id="video" autoplay loop muted controls style="' + style + '"><source id="videoSrc" src="' + obj.Value + '" type="' + obj.Type + '" /></video>');
+                    //$('#videoholder')[0].load();
+                    $('#videoholder').show();
                 }
             }
 
@@ -155,7 +158,7 @@
                 slides = jQuery.parseJSON(json);
             
                 //start slideshow
-                showSlide();
+                showNext();
 
                 //start timer (10 min)           
                 timer.set({ time: 600000, autostart: true });
@@ -213,19 +216,19 @@
 
             $(document).ready(function () {
                 $('#message').click(function () {
-                    showSlide();
+                    showNext();
                 });
             });
 
             $(document).ready(function () {
                 $('#refresh').click(function () {
-                    showSlide();
+                    showNext();
                 });
             });
 
             $(document).ready(function () {
                 $('#videoholder').click(function () {
-                    showSlide();
+                    showNext();
                 });
             });
         });

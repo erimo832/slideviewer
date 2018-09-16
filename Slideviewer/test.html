@@ -1,22 +1,94 @@
 ﻿<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-    <title></title>
-
-    <link href="/css/manager.css" rel="stylesheet" />
-    <link id="theme" href="/css/theme/military.css" rel="stylesheet" />
-
-    <script src="/Scripts/jquery-3.1.1.min.js"></script>
-    <script src="/Scripts/jquery.signalR-2.2.1.js"></script>
-    <script src="/signalr/hubs"></script>
-    <script id="houses" src="/Scripts/gothouses.js"></script>
-
-    <script type="text/javascript">
-    </script>
-
+    <meta charset="utf-8">
+    <title>Directly accessing Street View data</title>
+    <style>
+         /* Always set the map height explicitly to define the size of the div
+        * element that contains the map. */
+         #map {
+             height: 100%;
+         }
+         /* Optional: Makes the sample page fill the window. */
+         html, body {
+             height: 100%;
+             margin: 0;
+             padding: 0;
+         }
+    </style>
 </head>
 <body>
-    
-    <img src="images/gothouses/lannister.jpg" style="max-width: 100%; max-height: 820px;" />
+    <div id="map" style="width: 45%; height: 100%;float:left"></div>
+    <div id="pano" style="width: 45%; height: 100%;float:left"></div>
+    <script>
+      /*
+       * Click the map to set a new location for the Street View camera.
+       */
+
+      var map;
+      var panorama;
+
+      function initMap() {
+        var berkeley = {lat: 58.4095984, lng: 13.8730628};
+        var sv = new google.maps.StreetViewService();
+
+        panorama = new google.maps.StreetViewPanorama(document.getElementById('pano'));
+
+        // Set up the map.
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: berkeley,
+          zoom: 16,
+          streetViewControl: false
+        });
+
+        // Set the initial Street View camera to the center of the map
+        sv.getPanorama({location: berkeley, radius: 50}, processSVData);
+
+        // Look for a nearby Street View panorama when the map is clicked.
+        // getPanoramaByLocation will return the nearest pano when the
+        // given radius is 50 meters or less.
+        map.addListener('click', function(event) {
+          sv.getPanorama({location: event.latLng, radius: 50}, processSVData);
+        });
+      }
+
+      function processSVData(data, status) {
+        if (status === 'OK') {
+          var marker = new google.maps.Marker({
+            position: data.location.latLng,
+            map: map,
+            title: data.location.description
+          });
+
+          panorama.setPano(data.location.pano);
+          panorama.setPov({
+            heading: 270,
+            pitch: 0
+          });
+          panorama.setVisible(true);
+
+          marker.addListener('click', function() {
+            var markerPanoID = data.location.pano;
+            // Set the Pano to use the passed panoID.
+            panorama.setPano(markerPanoID);
+            panorama.setPov({
+              heading: 270,
+              pitch: 0
+            });
+            panorama.setVisible(true);
+          });
+        } else {
+          console.error('Street View data not found for this location.');
+        }
+      }
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBdYB-0ez6vBKzdiMR2t93HEmzwX6UFMpc&callback=initMap">
+
+        //https://maps.googleapis.com/maps/api/streetview?size=600x300&location=46.414382,10.013988&heading=151.78&pitch=-0.76&key=YOUR_API_KEY 
+        //https://developers.google.com/maps/documentation/streetview/?hl=en
+        //http://www.dbi.io/uk/blog/38-tools-for-beautiful-data-visualisations/
+        //https://developers.google.com/maps/documentation/javascript/examples/streetview-service
+    </script>
 </body>
 </html>

@@ -3,15 +3,43 @@
 <head>
     <title></title>
 
+    <link rel="stylesheet" href="Content/bootstrap.min.css">
     <link href="/css/manager.css" rel="stylesheet" />
     <link id="theme" href="/css/theme/military.css" rel="stylesheet" />
         
     <script src="/Scripts/jquery-3.1.1.min.js"></script>    
+    <script src="/Scripts/jquery-ui-1.12.1.min.js"></script>
+
+    <script>
+        // handle jQuery plugin naming conflict between jQuery UI and Bootstrap
+        $.widget.bridge('uibutton', $.ui.button);
+        $.widget.bridge('uitooltip', $.ui.tooltip);
+    </script>
+    
     <script src="/Scripts/jquery.signalR-2.2.1.js"></script>
-    <script src="/signalr/hubs"></script>
+    <script src="/signalr/hubs"></script>    
+    <script src="Scripts/bootstrap.min.js"></script>        
     <script id="houses" src="/Scripts/gothouses.js"></script>
 
+    <style>
+        .modal
+        {
+            overflow: hidden;
+        }
+        .modal-dialog{
+            margin-right: 0;
+            margin-left: 0;
+        }
+    </style>
+
     <script type="text/javascript">
+        /*TODO:
+        - Show a list of slides in manager
+        - Add method to select one and publish to client
+        - Add support in viewer to show one slide
+        - Refactor java script
+
+        */
         $(function () {
             // Declare a proxy to reference the hub.
             var chat = $.connection.commandHub;
@@ -43,6 +71,12 @@
 
                 //Some flashing to alert new event
                 $("#log").fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+            };
+
+            chat.client.slidesChanged = function (json) {
+                slides = jQuery.parseJSON(json);
+
+                
             };
 
 
@@ -103,6 +137,18 @@
 
                     chat.server.pushSlidesToClients(clients, name);
                 });
+
+                //Register click 
+                $('#getSlides').click(function () {
+                    var clients = getSelectedConnectionIds();
+                    var name = $('#slideShowName').val();
+
+                    chat.server.getSlideshow(name);
+                });
+                //Register click 
+                $('.slideHeader').click(function () {                    
+                    $('.slideshow').toggle();
+                });
             });
 
             $.connection.hub.start().done(function () {
@@ -117,13 +163,12 @@
             $('#changeTheme').click(function () {
                 $("head link#theme").attr("href", $('#changeTheme').val());
             });
-
-
-
-
+        
             $.connection.hub.disconnected(function () {
-                $('#serverStatus').text("disconnected from server, lasterror: " + $.connection.hub.lastError.message);
-                $('#serverStatus').show();
+                if ($.connection.hub.lastError) {
+                    $('#serverStatus').text("disconnected from server, lasterror: " + $.connection.hub.lastError.message);
+                    $('#serverStatus').show();
+                }
 
                 //reconnect
                 setTimeout(function () {
@@ -169,7 +214,33 @@
             
         function resizeSelectionList() {        
             $(".autoheight").attr("size", parseInt($(".autoheight option").length));
-        };            
+        };
+
+        $(document).ready(function () {
+            
+            $("#objSelectorDialog").draggable({
+                handle: ".modal-header"
+            });
+            
+            
+            
+            //$( "#selectable" ).selectable();        
+            /**/
+
+
+            /*var $lis = $('.list-group li')
+            $lis.on('click', function () {
+                $lis.removeClass('active')
+                $(this).addClass('active')
+            });*/
+
+            $(".list-group list-group-item").click(function (e) {
+                $(".list-group list-group-item").removeClass("active");
+                $(e.target).addClass("active");
+            });
+        });
+
+        
     </script>
        
 </head>
@@ -214,16 +285,19 @@
                 <input type="button" class="actionbutton shadow color-primary-3" id="broadcastmessage" value="broadcast" />
             </div>
 
-            <div class="area">
+            <h3 class="slideHeader">Slide shows</h3>
+            <div class="area slideshow">                
                 <div class="inputheader">slide show name</div>
                 <input type="text" class="textInput color-primary-2 shadow" id="slideShowName" value="tv" />
                 
                 <div class="area">
-                    <input type="button" class="actionbutton shadow color-primary-3" id="changeslide" value="change slide" />
+                    <input type="button" class="actionbutton shadow color-primary-3" id="changeslide" value="change to random slide" />
+                    <input type="button" class="actionbutton shadow color-primary-3" id="getSlides" value="get slides" />
+                    <button type="button" class="actionbutton shadow color-primary-3" data-toggle="modal" data-target="#objSelectorDialog">Open Modal</button>
+                    
                 </div>
             </div>
         </div>
-
         <div>
             <div class="inputheader">log</div>
             <table>
@@ -234,8 +308,35 @@
                     </td>
                 </tr>
             </table>
+        </div>
 
+
+        <!-- Select object dialog -->
+        <div id="objSelectorDialog" class="modal fade" role="dialog">
+            <div class="modal-dialog">        
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Select object</h4>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="list-group">
+                            <li class="list-group-item">Item 1</li>
+                            <li class="list-group-item">Item 2</li>
+                            <li class="list-group-item">Item 3</li>
+                            <li class="list-group-item">Item 4</li>
+                            <li class="list-group-item">Item 5</li>
+                            <li class="list-group-item">Item 6</li>
+                            <li class="list-group-item">Item 7</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
 </body>
 </html>

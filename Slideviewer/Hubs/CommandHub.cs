@@ -224,6 +224,23 @@ namespace ControlHub.Hubs
             { /* probably path not found */ }
         }
 
+        public void PushSlideToClient(string[] connectionIds, Slide slide)
+        {
+            try
+            {
+                var json = JsonHelper<Slide>.ToJson(slide);
+
+                foreach (var connectionId in connectionIds)
+                {
+                    Task.Run(() => Clients.Client(connectionId).SetSlide(json));
+                }
+
+                PublishLogEvent("command", string.Format("Command: SetSlide published. Path: {0}", slide.Value));
+            }
+            catch
+            { /* probably path not found */ }
+        }
+
 
         #endregion
     }
