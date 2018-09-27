@@ -21,7 +21,7 @@ $(document).ready(function () {
         });
     }
 
-    var fontFamily = getQueryParam("font-family", "Verdana"); //Arial Black
+    var fontFamily = getQueryParam("font-family"); //Arial Black
 
     if (!(fontFamily == null || fontFamily == "")) {
         $("body").css("font-family", fontFamily);
