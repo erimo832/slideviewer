@@ -16,8 +16,7 @@
             var outlineLayerPath = "./images/weather/outlines.png";
             var cityLayerPath = "./images/weather/cities.png";
 
-            var baseurl =
-                "http://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp/{year}/{month}/{day}/?timeZone=Europe/Stockholm";
+            var baseurl = "http://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp/{year}/{month}/{day}/?timeZone=Europe/Stockholm";
 
             var baseLayer = new Image();
             baseLayer.src = baseLayerPath;
@@ -50,7 +49,7 @@
                         function(data) {         
                             first = false;               
                             lastGet = new Date();
-                            //var offset = 0;
+                            
                             for (let i = 0; i < data.files.length; i++) {
                                 var file = data.files[i];
                                 var date = file.valid.substr(0, 10);
@@ -75,38 +74,31 @@
                             }
                     });
                 }
-                        
-                playImages();
-                    
+
+                //Start drawing att index 0
+                drawRadar(0);                    
             }
 
-            function playImages()
-            {
-                
+            function drawRadar(index) {
 
-                        for (let i = 0; i < images.length; i++) {
-                            setTimeout(() => {
-                                    drawRadar(images[i]);
-                                },
-                                interval * i);
+                if (index < images.length) {
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.drawImage(baseLayer, 0, 0, width, height);
+                    ctx.drawImage(outlineLayer, 0, 0, width, height);
+                    ctx.drawImage(images[index].img, 0, 0, width, height);
+                    ctx.drawImage(cityLayer, 0, 0, width, height);
 
-                        }
+                    drawInfo(images[index]);
 
-                        //Register new reload
-                        setTimeout(() => {
-                                loadData();
-                            },
-                            interval * images.length + finalInterval);
-            }
-
-            function drawRadar(radar) {
-                ctx.clearRect(0, 0, width, height);
-                ctx.drawImage(baseLayer, 0, 0, width, height);
-                ctx.drawImage(outlineLayer, 0, 0, width, height);
-                ctx.drawImage(radar.img, 0, 0, width, height);
-                ctx.drawImage(cityLayer, 0, 0, width, height);
-
-                drawInfo(radar);
+                    setTimeout(() => {
+                        drawRadar(index + 1);
+                    }, interval);
+                }
+                else {
+                    setTimeout(() => {
+                        loadData();
+                    }, finalInterval);
+                }
             }
 
             function drawInfo(radar) {
@@ -126,7 +118,6 @@
             }
 
             $(document).ready(function() {
-
                 width = getQueryParam('width', '471');
                 height = getQueryParam('height', '887');
 

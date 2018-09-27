@@ -20,4 +20,11 @@ $(document).ready(function () {
             $(this).css("font-size", altsize + "px");
         });
     }
+
+    var fontFamily = getQueryParam("font-family", "Verdana"); //Arial Black
+
+    if (!(fontFamily == null || fontFamily == "")) {
+        $("body").css("font-family", fontFamily);
+    }
+
 });
