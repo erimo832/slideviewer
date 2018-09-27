@@ -159,6 +159,7 @@
     <Content Include="images\weather\cities.png" />
     <Content Include="images\weather\cities_orginal.png" />
     <Content Include="images\weather\outlines.png" />
+    <Content Include="weatherRadarPlayer.html" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\common.js" />
