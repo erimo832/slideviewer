@@ -39,65 +39,80 @@
             var first = true;
 
             function loadData() {
-                var now = new Date();
-                var url = baseurl.replace("{year}", now.getFullYear()).replace("{month}", now.getMonth() + 1)
-                    .replace("{day}", now.getDate());
+                try {
+                    var now = new Date();
+                    var url = baseurl.replace("{year}", now.getFullYear()).replace("{month}", now.getMonth() + 1)
+                        .replace("{day}", now.getDate());
 
-                if(Math.abs(now - lastGet) > (5 * 60 * 1000) ||first)
-                {
-                    $.getJSON(url,
-                        function(data) {         
-                            first = false;               
-                            lastGet = new Date();
-                            
-                            for (let i = 0; i < data.files.length; i++) {
-                                var file = data.files[i];
-                                var date = file.valid.substr(0, 10);
-                                var time = file.valid.substr(11, 5);
-                                var pngs = file.formats.filter(function(item) {
-                                    return item.key === 'png';
-                                });
-                                if (pngs.length === 1) {
-                                    images.push({
-                                        date: date,
-                                        time: time,
-                                        url: pngs[0].link,
-                                        img: null
+                    if (Math.abs(now - lastGet) > (5 * 60 * 1000) || first) {
+                        $.getJSON(url,
+                            function (data) {
+                                first = false;
+                                lastGet = new Date();
+
+                                images = [];
+
+                                for (let i = 0; i < data.files.length; i++) {
+                                    var file = data.files[i];
+                                    var date = file.valid.substr(0, 10);
+                                    var time = file.valid.substr(11, 5);
+                                    var pngs = file.formats.filter(function (item) {
+                                        return item.key === 'png';
                                     });
+                                    if (pngs.length === 1) {
+                                        images.push({
+                                            date: date,
+                                            time: time,
+                                            url: pngs[0].link,
+                                            img: null
+                                        });
+                                    }
                                 }
-                            }
 
-                            for (let j = 0; j < images.length; j++) {
-                                //load images
-                                images[j].img = new Image();
-                                images[j].img.src = images[j].url;
-                            }
-                    });
+                                for (let j = 0; j < images.length; j++) {
+                                    //load images
+                                    images[j].img = new Image();
+                                    images[j].img.src = images[j].url;
+                                }
+                            });
+                    }
+
+                    //Start drawing att index 0
+                    drawRadar(0);
                 }
-
-                //Start drawing att index 0
-                drawRadar(0);                    
+                catch (err) {
+                    setTimeout(() => {
+                        loadData();
+                    }, 1000);
+                }                                    
             }
 
             function drawRadar(index) {
+                try {
+                    if (index < images.length) {
+                        ctx.clearRect(0, 0, width, height);
+                        ctx.drawImage(baseLayer, 0, 0, width, height);
+                        ctx.drawImage(outlineLayer, 0, 0, width, height);
+                        ctx.drawImage(images[index].img, 0, 0, width, height);
+                        ctx.drawImage(cityLayer, 0, 0, width, height);
 
-                if (index < images.length) {
-                    ctx.clearRect(0, 0, width, height);
-                    ctx.drawImage(baseLayer, 0, 0, width, height);
-                    ctx.drawImage(outlineLayer, 0, 0, width, height);
-                    ctx.drawImage(images[index].img, 0, 0, width, height);
-                    ctx.drawImage(cityLayer, 0, 0, width, height);
+                        drawInfo(images[index]);
 
-                    drawInfo(images[index]);
-
-                    setTimeout(() => {
-                        drawRadar(index + 1);
-                    }, interval);
+                        console.log(index + " " + images[index].time + new Date());
+                        setTimeout(() => {
+                            drawRadar(index + 1);
+                        }, interval);
+                    }
+                    else {
+                        setTimeout(() => {
+                            loadData();
+                        }, finalInterval);
+                    }
                 }
-                else {
+                catch (err) {
                     setTimeout(() => {
                         loadData();
-                    }, finalInterval);
+                    }, 1000);
                 }
             }
 
@@ -121,7 +136,7 @@
                 width = getQueryParam('width', '471');
                 height = getQueryParam('height', '887');
 
-                interval = Number(getQueryParam('interval', 1000));
+                interval = Number(getQueryParam('interval', 250));
                 finalInterval = Number(getQueryParam('finalinterval', 5000));
 
                 ctx.canvas.height = height;
