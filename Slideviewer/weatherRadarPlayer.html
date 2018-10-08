@@ -34,6 +34,7 @@
             var height;
             var interval;
             var finalInterval;
+            var lastFrames;
             var images = [];
             var lastGet;
             var first = true;
@@ -77,8 +78,11 @@
                             });
                     }
 
-                    //Start drawing att index 0
-                    drawRadar(0);
+                    var startIndex = images.length - lastFrames;
+                    if (startIndex < 0)
+                        startIndex = 0;
+
+                    drawRadar(startIndex);
                 }
                 catch (err) {
                     setTimeout(() => {
@@ -98,7 +102,6 @@
 
                         drawInfo(images[index]);
 
-                        console.log(index + " " + images[index].time + new Date());
                         setTimeout(() => {
                             drawRadar(index + 1);
                         }, interval);
@@ -138,6 +141,8 @@
 
                 interval = Number(getQueryParam('interval', 250));
                 finalInterval = Number(getQueryParam('finalinterval', 5000));
+
+                lastFrames = Number(getQueryParam('lastframes', 48)); //3h
 
                 ctx.canvas.height = height;
                 ctx.canvas.width = width;
