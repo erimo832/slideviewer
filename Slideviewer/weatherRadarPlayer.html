@@ -136,8 +136,24 @@
             }
 
             $(document).ready(function() {
-                width = getQueryParam('width', '471');
-                height = getQueryParam('height', '887');
+                width = Number(getQueryParam('width', 0)); //'471'
+                height = Number(getQueryParam('height', 0));//'887'
+
+                //auto size
+                if (width === 0 && height === 0) {
+                    $('body').css('overflow', 'hidden');
+                    var w = $(window).width();
+                    var h = $(window).height();
+
+                    //Keep aspect
+                    if (w / h < 471 / 887) {
+                        width = w;
+                        height = w * (887 / 471);
+                    } else {
+                        width = h * (471 / 887);
+                        height = h;
+                    }
+                }
 
                 interval = Number(getQueryParam('interval', 250));
                 finalInterval = Number(getQueryParam('finalinterval', 5000));
