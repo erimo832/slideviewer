@@ -1,9 +1,16 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title></title>
+<title></title>
     <link href="/css/sliderviewer.css" rel="stylesheet" />
     <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
+
+    <style> 
+        -webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+    </style>
 
     <script src="/Scripts/jquery-3.1.1.js"></script>
     <script src="/Scripts/jquery.signalR-2.2.1.js"></script>
@@ -22,13 +29,25 @@
                         " - theme (name of theme on server. Avalible themes: 'c64', 'light', 'lightcream', 'night', 'nightcream', 'sand', 'terminal') <br />" +
                         " - size (base font-size) <br />" +
                         " - width <br />" +
-                        " - height <br />";
+                        " - height <br />" +
+                        " - runinsequence <br />" +
+                        " - timeoutsec (time in ms between slides, default 600 (10min)) <br />" +
+                        " - refreshlibrarysec (gets new slides from server default 3600 (1h))";
 
         
             var slides = null;
-            var timer = null;
+            var timeOutMs = null;
+            var refreshlibraryms = null;
+            var runinsequence = null;
+            var name = null;
+            var init = true;
 
             var style = "";
+            var index = -1;
+
+
+            // Declare a proxy to reference the hub.
+            var chat = $.connection.commandHub;
 
             //replace with start and stop of timer
             //https://github.com/jchavannes/jquery-timer
@@ -36,9 +55,11 @@
                 showNext();
             });
 
-
-            // Declare a proxy to reference the hub.
-            var chat = $.connection.commandHub;
+            var refreshSlidesTimer = $.timer(function () {
+                if (name) {
+                    chat.server.getSlideshow(name);
+                }
+            });
         
             $('#frameholder').hide();
             $('#iframe').hide();
@@ -46,7 +67,7 @@
             $('#serverStatus').hide();
         
             function registerToServer() {
-                var name = getQueryParam("name");
+                name = getQueryParam("name");
 
                 if (name == null) {
                     name = $('#clientName').val();                    
@@ -69,16 +90,22 @@
 
             function showNext() {
                 if (slides != null) {
-                    var num = Math.round((Math.random() * (slides.length - 1)));
+                    if (runinsequence) {
+                        index = index + 1;
+                        if (index > slides.length -1 )
+                            index = 0;
 
-                    var obj = slides[num];
+                    } else {
+                        index = Math.round((Math.random() * (slides.length - 1)));
+                    }
+
+                    var obj = slides[index];
 
                     showSlide(obj);
                 }
             }
                
-            function showSlide(obj)
-            {
+            function showSlide(obj) {
                 if (obj.Type == "message") {
                     $('#frameholder').hide();
                     $('#iframe').hide();
@@ -156,17 +183,22 @@
         
             chat.client.slidesChanged = function (json) {
                 slides = jQuery.parseJSON(json);
-            
-                //start slideshow
-                showNext();
 
-                //start timer (10 min)           
-                timer.set({ time: 600000, autostart: true });
+                if (init) {
+                    init = false;
+                    //start slideshow
+                    showNext();
+                }
             };
 
                 
             // Start the connection.
             $.connection.hub.start().done(function () {
+                timeOutMs = Number(getQueryParam('timeoutsec', 600)) * 1000;
+                refreshlibraryms = Number(getQueryParam('refreshlibrarysec', 3600)) * 1000;
+                runinsequence = getQueryParam('runinsequence', null);
+                
+
                 //check if name in query string
                 if (getQueryParam("name") != null) {
                     registerToServer();
@@ -180,6 +212,13 @@
                 $('#register').click(function () {                
                     registerToServer();
                 });
+
+
+                //start timer (10 min)           
+                timer.set({ time: timeOutMs, autostart: true });
+
+                //start timer (10 min)           
+                refreshSlidesTimer.set({ time: refreshlibraryms, autostart: true });
             });
 
         
@@ -235,7 +274,7 @@
     </script>
 
 </head>
-<body style="margin: 0;">
+<body style="margin: 0; overflow: hidden;">
     <input type="text" id="clientName" value="Change" />
     <input type="button" id="register" value="register" />
 
