@@ -4,14 +4,7 @@
 <title></title>
     <link href="/css/sliderviewer.css" rel="stylesheet" />
     <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
-
-    <style> 
-        -webkit-scrollbar {
-            width: 0px;
-            height: 0px;
-        }
-    </style>
-
+    
     <script src="/Scripts/jquery-3.1.1.js"></script>
     <script src="/Scripts/jquery.signalR-2.2.1.js"></script>
     <script src="/signalr/hubs"></script>
@@ -39,6 +32,7 @@
             var timeOutMs = null;
             var refreshlibraryms = null;
             var runinsequence = null;
+            var noclientcache = null;
             var name = null;
             var init = true;
 
@@ -120,7 +114,9 @@
                     $('#iframe').hide();
                     $('#videoholder').hide();
 
-                    $('#message').html('<image id="image" src="' + obj.Value + '" style="' + style + '" />');
+                    var imgUri = obj.Value;
+
+                    $('#message').html('<image id="image" src="' + imgUri + '" style="' + style + '" />');
                     $('#message').show();
                 }
 
@@ -198,7 +194,6 @@
                 refreshlibraryms = Number(getQueryParam('refreshlibrarysec', 3600)) * 1000;
                 runinsequence = getQueryParam('runinsequence', null);
                 
-
                 //check if name in query string
                 if (getQueryParam("name") != null) {
                     registerToServer();

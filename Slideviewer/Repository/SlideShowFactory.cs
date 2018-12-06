@@ -49,7 +49,7 @@ namespace ControlHub.Repository
                     { 
                         Type = "image",
                         Css = "max-width: 100%; max-height: 820px;", // move somewhere else
-                        Value = string.Format("{0}{1}", path, item.Name)
+                        Value = string.Format("{0}{1}", path, item.Name) + "?m=" + item.CreationTime.ToString("yyyyMMddHHmmssfff")
                     });
                 }
                 else if (item.FullName.ToLower().EndsWith("mp4"))
