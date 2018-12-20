@@ -11,6 +11,7 @@ $(document).ready(function () {
 
     if (!(size == null || size == "")) {
         $("body").css("font-size", size + "px");
+        $(".sizable").css("height", size + "px");
     }
 
     var altsize = getQueryParam("altsize");

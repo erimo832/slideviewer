@@ -149,6 +149,7 @@
     <Content Include="css\themes\nightcream.css" />
     <Content Include="css\themes\sand.css" />
     <Content Include="css\themes\terminal.css" />
+    <Content Include="css\themes\wood.css" />
     <Content Include="datetime.html" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="images\sunlight\day_1024x512.jpg" />

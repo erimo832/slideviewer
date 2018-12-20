@@ -24,7 +24,6 @@
             var lat;
             var style;
 
-
             var timer = $.timer(function () {
                 draw();
             });
@@ -37,33 +36,42 @@
                 var set = new moment(times.sunset).tz(timezone).locale(culture).format(format);
                 var rise = new moment(times.sunrise).tz(timezone).locale(culture).format(format);
                 
-
-                $("#time").html(rise + " " + set);
+                $("#rise").html(rise);
+                $("#set").html(set);
             }
 
-
             $(document).ready(function () {
-                timezone = getQueryParam('timezone', 'Europe/Stockholm');
-                format = getQueryParam('format', 'HH:mm:ss');
-                culture = getQueryParam('culture', 'en');
-                lon = Number(getQueryParam('lon', 13.88));
-                lat = Number(getQueryParam('lat', 58.41));
-                style = getQueryParam('style', '');
+                var query = location.search.substring(1);
 
-                //Set style
-                document.getElementById("time").style.cssText = style;
+                if (query.length > 0) {
+                    timezone = getQueryParam('timezone', 'Europe/Stockholm');
+                    format = getQueryParam('format', 'HH:mm:ss');
+                    culture = getQueryParam('culture', 'en');
+                    lon = Number(getQueryParam('lon', 13.88));
+                    lat = Number(getQueryParam('lat', 58.41));
+                    style = getQueryParam('style', null);
 
-                draw();
+                    //Set style
+                    if (style) {
+                        document.getElementById("body").style.cssText = style;
+                    }
 
-                timer.set({ time: 5 * 60 * 1000, autostart: true }); //5min
+                    draw();
+
+                    timer.set({ time: 5 * 60 * 1000, autostart: true }); //5min
+
+                    if (!getQueryParam('rowbreak', null)) {
+                        $("#rowbreak").remove();
+                    }
+
+                    $("#config").remove();
+                }
             });
-
         });
     </script>
 </head>
-<body>
-    <div id="time"></div>
-    <div id="temptable" class="container-fluid">
+<body id="body">
+    <div id="config" class="container-fluid">
         <p>I need parameters to work! </p>
         Parameters:
         <ul>
@@ -75,7 +83,48 @@
             <li>format - datetime format (common formats: HH:mm, YYYY-MM-DD)(http://momentjs.com/ , http://www.hnwatcher.com/r/1771672/Date-Time-Format-Generator-js-php-ruby/)</li>
             <li>culture - What language (example: en, sv, fr, nl, pt-br, ja and more).</li>
             <li>timezone - Set a timezone (example: Europe/Stockholm, America/Sao_Paulo and more) (see map on page for valid timezones: http://momentjs.com/timezone/) </li>
+            <li>rowbreak - if break row between sunrise and sunset</li>
         </ul>
-    </div>
+    </div>   
+        
+    <div id="upndown" >
+        <svg class="sunrise sizable"
+             fill="none"
+             stroke="currentColor"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             stroke-width="2"
+             viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 18a5 5 0 0 0-10 0" />
+            <line x1="12" x2="12" y1="2" y2="9" />
+            <line x1="4.22" x2="5.64" y1="10.22" y2="11.64" />
+            <line x1="1" x2="3" y1="18" y2="18" />
+            <line x1="21" x2="23" y1="18" y2="18" />
+            <line x1="18.36" x2="19.78" y1="11.64" y2="10.22" />
+            <line x1="23" x2="1" y1="22" y2="22" />
+            <polyline points="8 6 12 2 16 6" />
+        </svg>
+        <div id="rise" style="display: inline"></div>
+        <br id="rowbreak"/>
+        <svg class="sunset sizable"
+             fill="none"
+             stroke="currentColor"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             stroke-width="2"
+             viewBox="0 0 24 24"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 18a5 5 0 0 0-10 0" />
+            <line x1="12" x2="12" y1="9" y2="2" />
+            <line x1="4.22" x2="5.64" y1="10.22" y2="11.64" />
+            <line x1="1" x2="3" y1="18" y2="18" />
+            <line x1="21" x2="23" y1="18" y2="18" />
+            <line x1="18.36" x2="19.78" y1="11.64" y2="10.22" />
+            <line x1="23" x2="1" y1="22" y2="22" />
+            <polyline points="16 5 12 9 8 5" />
+        </svg>
+        <div id="set" style="display: inline"></div>
+    </div>    
 </body>
 </html>
