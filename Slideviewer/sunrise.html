@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="/css/sliderviewer.css" rel="stylesheet" />
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+    <link id="theme" href="/css/themes/default.css" rel="stylesheet" />
+
+    <script src="/Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/jquery.timer.js"></script>
+    <script src="/Scripts/common.js"></script>
+    <script src="/Scripts/bootstrap.min.js"></script>
+    <script src="/Scripts/theme.js"></script>
+    <script src="/Scripts/suncalc.js"></script>
+    <script src="Scripts/moment-with-locales.min.js"></script>
+    <script src="Scripts/moment-timezone-with-data.min.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            var timezone;
+            var format;
+            var culture;
+            var lon;
+            var lat;
+            var style;
+
+
+            var timer = $.timer(function () {
+                draw();
+            });
+
+            function draw() {
+                var date = Date.now();
+
+                var times = SunCalc.getTimes(date, lat, lon);
+
+                var set = new moment(times.sunset).tz(timezone).locale(culture).format(format);
+                var rise = new moment(times.sunrise).tz(timezone).locale(culture).format(format);
+                
+
+                $("#time").html(rise + " " + set);
+            }
+
+
+            $(document).ready(function () {
+                timezone = getQueryParam('timezone', 'Europe/Stockholm');
+                format = getQueryParam('format', 'HH:mm:ss');
+                culture = getQueryParam('culture', 'en');
+                lon = Number(getQueryParam('lon', 13.88));
+                lat = Number(getQueryParam('lat', 58.41));
+                style = getQueryParam('style', '');
+
+                //Set style
+                document.getElementById("time").style.cssText = style;
+
+                draw();
+
+                timer.set({ time: 5 * 60 * 1000, autostart: true }); //5min
+            });
+
+        });
+    </script>
+</head>
+<body>
+    <div id="time"></div>
+    <div id="temptable" class="container-fluid">
+        <p>I need parameters to work! </p>
+        Parameters:
+        <ul>
+            <li>lon (longitide ex: 58.41)</li>
+            <li>lat (latitude ex 13.88)</li>
+            <li>theme (name of theme on server. Avalible themes: 'c64', 'light', 'lightcream', 'night', 'nightcream', 'sand', 'terminal')</li>
+            <li>size (base font-size)</li>
+            <li>transparent (if background should be transparent)</li>
+            <li>format - datetime format (common formats: HH:mm, YYYY-MM-DD)(http://momentjs.com/ , http://www.hnwatcher.com/r/1771672/Date-Time-Format-Generator-js-php-ruby/)</li>
+            <li>culture - What language (example: en, sv, fr, nl, pt-br, ja and more).</li>
+            <li>timezone - Set a timezone (example: Europe/Stockholm, America/Sao_Paulo and more) (see map on page for valid timezones: http://momentjs.com/timezone/) </li>
+        </ul>
+    </div>
+</body>
+</html>
