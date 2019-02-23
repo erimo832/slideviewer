@@ -180,11 +180,11 @@
             chat.client.slidesChanged = function (json) {
                 slides = jQuery.parseJSON(json);
 
-                if (init) {
+                //if (init) { ( //Ok if refresh timer is used but then then the changeslide command don't work (but we gets some strange changes of slides during refresh library)
                     init = false;
                     //start slideshow
                     showNext();
-                }
+                //}
             };
 
                 
