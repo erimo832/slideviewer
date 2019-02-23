@@ -95,8 +95,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="artish.html" />
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\themes\base\accordion.css" />
@@ -151,7 +149,6 @@
     <Content Include="css\themes\terminal.css" />
     <Content Include="css\themes\wood.css" />
     <Content Include="datetime.html" />
-    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="images\sunlight\day_1024x512.jpg" />
     <Content Include="images\sunlight\day_1770x770.jpg" />
     <Content Include="images\sunlight\day_2000x1000.jpg" />
@@ -160,11 +157,11 @@
     <Content Include="images\weather\cities.png" />
     <Content Include="images\weather\cities_orginal.png" />
     <Content Include="images\weather\outlines.png" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\suncalc.js" />
     <Content Include="sunrise.html" />
     <Content Include="weatherRadarPlayer.html" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\common.js" />
     <Content Include="css\themes\terminal\Glass_TTY_VT220.ttf" />
     <Content Include="css\themes\c64\C64_Pro_Mono_v1.0-STYLE.eot" />
@@ -173,12 +170,6 @@
     <Content Include="css\themes\c64\C64_User_v1.0-STYLE.eot" />
     <Content Include="css\themes\c64\C64_User_v1.0-STYLE.ttf" />
     <Content Include="css\themes\c64\C64_User_v1.0-STYLE.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap-theme.min.css.map" />
-    <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\bootstrap.min.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <None Include="Properties\PublishProfiles\site.pubxml" />
