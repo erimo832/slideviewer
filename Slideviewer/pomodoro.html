@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link id="theme" href="./css/themes/default.css" rel="stylesheet" />
+
+    <script src="./Scripts/jquery-3.1.1.js"></script>
+    <script src="./Scripts/jquery.timer.js"></script>
+    <script src="./Scripts/common.js"></script>
+    <script src="./Scripts/theme.js"></script>
+
+    <script type="text/javascript">
+
+        $(function() {
+            $.ajaxSetup({ cache: false });
+            var baseLayerPath = "./images/weather/basemap.png";
+            var outlineLayerPath = "./images/weather/outlines.png";
+            var cityLayerPath = "./images/weather/cities.png";
+
+            var baseurl = "http://opendata-download-radar.smhi.se/api/version/latest/area/sweden/product/comp/{year}/{month}/{day}/?TimeZone=Europe/Stockholm";
+
+            var baseLayer = new Image();
+            baseLayer.src = baseLayerPath;
+
+            var outlineLayer = new Image();
+            outlineLayer.src = outlineLayerPath;
+
+            var cityLayer = new Image();
+            cityLayer.src = cityLayerPath;
+
+            var canvas = $("#canvas").get(0);
+            var ctx = canvas.getContext("2d");
+
+            var width;
+            var height;
+            var interval;
+            var finalInterval;
+            var lastFrames;
+            var images = [];
+            var lastGet;
+            var first = true;
+
+            function loadData() {
+                try {
+                    var now = new Date();
+                    var url = baseurl.replace("{year}", now.getFullYear()).replace("{month}", now.getMonth() + 1)
+                        .replace("{day}", now.getDate());
+
+                    if (Math.abs(now - lastGet) > (5 * 60 * 1000) || first) {
+                        $.getJSON(url,
+                            function (data) {
+                                first = false;
+                                lastGet = new Date();
+
+                                images = [];
+
+                                for (let i = 0; i < data.files.length; i++) {
+                                    var file = data.files[i];
+                                    var date = file.valid.substr(0, 10);
+                                    var time = file.valid.substr(11, 5);
+                                    var pngs = file.formats.filter(function (item) {
+                                        return item.key === 'png';
+                                    });
+                                    if (pngs.length === 1) {
+                                        images.push({
+                                            date: date,
+                                            time: time,
+                                            url: pngs[0].link,
+                                            img: null
+                                        });
+                                    }
+                                }
+
+                                for (let j = 0; j < images.length; j++) {
+                                    //load images
+                                    images[j].img = new Image();
+                                    images[j].img.src = images[j].url;
+                                }
+                            });
+                    }
+
+                    var startIndex = images.length - lastFrames;
+                    if (startIndex < 0)
+                        startIndex = 0;
+
+                    drawRadar(startIndex);
+                }
+                catch (err) {
+                    setTimeout(() => {
+                        loadData();
+                    }, 1000);
+                }
+            }
+
+            function drawRadar(index) {
+                try {
+                    if (index < images.length) {
+                        ctx.clearRect(0, 0, width, height);
+                        ctx.drawImage(baseLayer, 0, 0, width, height);
+                        ctx.drawImage(outlineLayer, 0, 0, width, height);
+                        ctx.drawImage(images[index].img, 0, 0, width, height);
+                        ctx.drawImage(cityLayer, 0, 0, width, height);
+
+                        drawInfo(images[index]);
+
+                        setTimeout(() => {
+                            drawRadar(index + 1);
+                        }, interval);
+                    }
+                    else {
+                        setTimeout(() => {
+                            loadData();
+                        }, finalInterval);
+                    }
+                }
+                catch (err) {
+                    setTimeout(() => {
+                        loadData();
+                    }, 1000);
+                }
+            }
+
+            function drawInfo(radar) {
+                var size = getSize(radar.time);
+
+                $("#info").html(radar.time);
+                $("#info").css('top', height - size.height + 'px');
+                $("#info").css('left', width - size.width + 'px');
+            }
+
+            function getSize(text) {
+                $("#dummy").html(text);
+                return {
+                    height: $("#dummy").height(),
+                    width: $("#dummy").width()
+                };
+            }
+
+            $(document).ready(function() {
+                width = Number(getQueryParam('width', 0)); //'471'
+                height = Number(getQueryParam('height', 0));//'887'
+
+                //auto size
+                if (width === 0 && height === 0) {
+                    $('body').css('overflow', 'hidden');
+                    var w = $(window).width();
+                    var h = $(window).height();
+
+                    //Keep aspect
+                    if (w / h < 471 / 887) {
+                        width = w;
+                        height = w * (887 / 471);
+                    } else {
+                        width = h * (471 / 887);
+                        height = h;
+                    }
+                }
+
+                interval = Number(getQueryParam('interval', 250));
+                finalInterval = Number(getQueryParam('finalinterval', 5000));
+
+                lastFrames = Number(getQueryParam('lastframes', 48)); //3h
+
+                ctx.canvas.height = height;
+                ctx.canvas.width = width;
+
+                loadData();
+            });
+        });
+
+    </script>
+
+</head>
+<body>
+
+</body>
+</html>
